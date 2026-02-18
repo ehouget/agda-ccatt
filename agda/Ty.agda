@@ -4,8 +4,9 @@ open import Prelude
 
 infixr 5 _⇒_
 
+-- Types
 data Ty (n : ℕ) : Type where
-  X : Fin n → Ty n
+  X   : Fin n → Ty n
   _⇒_ : (A B : Ty n) → Ty n
 
 -- A substitution on types
@@ -15,9 +16,9 @@ SubTy n n' = Vec (Ty n) n'
 -- Applying a type substitution
 _[_]' : {n : ℕ} {n' : ℕ} → Ty n' → SubTy n n' → Ty n
 X x [ σ ]' = lookup σ x
-(A ⇒ B) [ τ ]' = (A [ τ ]') ⇒ (B [ τ ]')
+(A ⇒ B) [ τ ]' = A [ τ ]' ⇒ B [ τ ]'
 
-WkTy : {n : ℕ} → Ty n →  Ty (suc n)
+WkTy : {n : ℕ} → Ty n → Ty (suc n)
 WkTy (X x) = X (suc x)
 WkTy (A ⇒ B) = WkTy A ⇒ WkTy B
 
@@ -28,16 +29,16 @@ SubTyId : (n : ℕ) → SubTy n n
 SubTyId zero = []
 SubTyId (suc n) = X zero ∷ SubTyWk (SubTyId n)
 
-SubTyIdEq : {n : ℕ} {A : Ty n} → (A [ SubTyId n ]') ≡ A
+SubTyIdEq : {n : ℕ} {A : Ty n} → A [ SubTyId n ]' ≡ A
 SubTyIdEq {n} {A = X x} = lookup-id x
   where
   lookup-map-weaken : {n n' : ℕ} {σ : SubTy n n'} (x : Fin n') {y : Fin n} → lookup σ x ≡ X y → lookup (SubTyWk σ) x ≡ X (suc y)
   lookup-map-weaken {σ = σ} x {y} p =
-    lookup (SubTyWk σ) x ≡⟨⟩
-    lookup (map WkTy σ) x  ≡⟨ lookup-map x WkTy σ ⟩
-    WkTy (lookup σ x)      ≡⟨ cong WkTy p ⟩
-    WkTy (X y)             ≡⟨⟩
-    X (suc y)            ∎
+    lookup (SubTyWk σ) x  ≡⟨⟩
+    lookup (map WkTy σ) x ≡⟨ lookup-map x WkTy σ ⟩
+    WkTy (lookup σ x)     ≡⟨ cong WkTy p ⟩
+    WkTy (X y)            ≡⟨⟩
+    X (suc y)             ∎
   lookup-id : {n : ℕ} (x : Fin n) → lookup (SubTyId n) x ≡ X x
   lookup-wk : {n : ℕ} (x : Fin n) → lookup (SubTyWk (SubTyId n)) x ≡ X (suc x)
   lookup-id zero = refl
@@ -67,7 +68,7 @@ _∘'_ : {n n' n'' : ℕ} → SubTy n' n'' → SubTy n n' → SubTy n n''
 (A ∷ τ') ∘' τ = A [ τ ]' ∷ (τ' ∘' τ)
 
 SubTyUnitL : {n n' : ℕ} (τ : SubTy n n') → SubTyId n' ∘' τ ≡ τ
-SubTyUnitL {n} {n'} τ = {!!} -- standard marterial
+SubTyUnitL {n} {n'} τ = {!!} -- standard material
 
 -- Applying a substition is an action
 [∘'] : {n n' n'' : ℕ} {A : Ty n''} {τ : SubTy n n'} {τ' : SubTy n' n''} → (A [ τ' ]' [ τ ]') ≡ (A [ τ' ∘' τ ]')
@@ -77,9 +78,6 @@ SubTyUnitL {n} {n'} τ = {!!} -- standard marterial
 
 {-# REWRITE [∘'] #-}
 {-# REWRITE SubTyUnitL #-}
-
-SubTy2Sub : {n n' : ℕ} (A B : Ty n') (σ : SubTy n n') → SubTy2 A B ∘' σ ≡ SubTy2 (A [ σ ]') (B [ σ ]')
-SubTy2Sub A B σ = refl
 
 -- Contexts
 data Con (n : ℕ) : Set where

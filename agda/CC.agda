@@ -1,3 +1,5 @@
+-- Our calculus CCaTT
+
 open import Prelude
 open import Ty
 
@@ -13,10 +15,6 @@ data Tm {n} Γ where
   var : {A : Ty n} → A ∈ Γ → Tm Γ A
   coh : {n' : ℕ} {Γ' : Con n'} {A : Ty n'} (ps : PS Γ' A) (τ : SubTy n n') (σ : Sub τ Γ Γ') → Tm Γ (A [ τ ]')
 
--- Extend a substitution with a term
-SubExt : {n : ℕ} {Γ : Con n} {n' : ℕ} {Γ' : Con n'} {τ : SubTy n n'} {A : Ty n'} (σ : Sub τ Γ Γ') → Tm Γ (A [ τ ]') → Sub τ Γ (Γ' ▹ A)
-SubExt σ t = σ , t
-
 Wk : {n : ℕ} {Γ : Con n} {A B : Ty n} → Tm Γ A → Tm (Γ ▹ B) A
 SubWk : {n n' : ℕ} {τ : SubTy n n'} {Γ : Con n} {Γ' : Con n'} (σ : Sub τ Γ Γ') (A : Ty n) → Sub τ (Γ ▹ A) Γ'
 
@@ -31,33 +29,41 @@ SubId : {n : ℕ} (Γ : Con n) → Sub (SubTyId n) Γ Γ
 SubId ε = tt
 SubId (Γ ▹ A) = SubWk (SubId Γ) A , var here
 
+-- Terminal substitution
 SubTerm : {n : ℕ} (Γ : Con n) → Sub (SubTyId n) Γ ε
 SubTerm Γ = tt
 
+-- Application of a substutituion
 _[_] : {n n' : ℕ} {τ : SubTy n n'} {Γ : Con n} {Γ' : Con n'} {A : Ty n'} → Tm Γ' A → (σ : Sub τ Γ Γ') → Tm Γ (A [ τ ]')
 
--- same as _[_] but with explicit τ
+-- Same as _[_] but with explicit τ
 _[∣_∣_] : {n n' : ℕ} {Γ : Con n} {Γ' : Con n'} {A : Ty n'} → Tm Γ' A → (τ : SubTy n n') (σ : Sub τ Γ Γ') → Tm Γ (A [ τ ]')
 _[∣_∣_] t τ σ = t [ σ ]
 
+-- Composition of substitutions
 _∘_ : {n : ℕ} {Γ : Con n} {n' : ℕ} {Γ' : Con n'} {n'' : ℕ} {Γ'' : Con n''} {τ : SubTy n n'} {τ' : SubTy n' n''} →
           Sub τ' Γ' Γ'' → Sub τ Γ Γ' → 
           Sub (τ' ∘' τ) Γ Γ''
 _∘_ {Γ'' = ε} σ' σ = tt
 _∘_ {Γ'' = Γ'' ▹ A} (σ' , t) σ = σ' ∘ σ , t [ σ ]
 
--- this is standard material
+-- Functoriality of substitution application
 [∘] : {n n' n'' : ℕ} {Γ : Con n} {Γ' : Con n'} {Γ'' : Con n''} {A : Ty n''} {t : Tm Γ'' A} {τ : SubTy n n'} {σ : Sub τ Γ Γ'} {τ' : SubTy n' n''} {σ' : Sub τ' Γ' Γ''} →
       (t [ σ' ] [ σ ]) ≡ t [ σ' ∘ σ ]
-[∘] = {!!}
+[∘] = {!!} -- this is standard material
 
 var here [ σ , t ] = t
 var (drop x) [ σ , t ] = var x [ σ ]
 _[_] {τ = τ} {Γ = Γ} (coh {A = A} ps τ' σ') σ = coh ps (τ' ∘' τ) (σ' ∘ σ)
 
+-- Unitality of substitutions
 ∘UnitL : {n n' : ℕ} {Γ : Con n} {Γ' : Con n'} {τ : SubTy n n'} (σ : Sub τ Γ Γ') → _∘_ {Γ = Γ} (SubId Γ') σ ≡ σ
 ∘UnitL {Γ' = ε} tt = refl
 ∘UnitL {Γ' = Γ' ▹ A} (σ , t) = Σ-≡,≡→≡ ({!!} , {!substConst _ _!}) -- this is standard material
+
+---
+--- Deriving basic operations
+---
 
 I : {n : ℕ} {Γ : Con n} {A : Ty n} → Tm Γ (A ⇒ A)
 I {n} {Γ} {A} = coh PS⊢X⇒X (SubTy1 A) tt
@@ -81,18 +87,21 @@ ap3 t u v w = ap (ap2 t u v) w
 --- Relations
 ---
 
+-- Applying coh with equal substitutions gives equal terms
 coh≡ : {n n' : ℕ} {Γ : Con n} {Γ' : Con n'} {A : Ty n'} (ps : PS Γ' A) {τ τ' : SubTy n n'} (p : τ ≡ τ') → {σ : Sub τ Γ Γ'} {σ' : Sub τ' Γ Γ'} → subst (λ τ → Sub τ Γ Γ') p σ ≡ σ' → subst (λ τ → Tm Γ (A [ τ ]')) p (coh ps τ σ) ≡ coh ps τ' σ'
 coh≡ ps refl refl = refl
 
 infix 5 _∼_
 
+-- Equivalence of substitutions
 _∼Sub_   : {n n' : ℕ} {τ : SubTy n n'} {Γ : Con n} {Γ' : Con n'} → Sub τ Γ Γ' → Sub τ Γ Γ' → Type
 ∼SubRefl : {n n' : ℕ} {τ : SubTy n n'} {Γ : Con n} {Γ' : Con n'} (σ : Sub τ Γ Γ') → _∼Sub_ {Γ = Γ} σ σ
 ∼SubSym  : {n n' : ℕ} {τ : SubTy n n'} {Γ : Con n} {Γ' : Con n'} {σ σ' : Sub τ Γ Γ'} → _∼Sub_ {Γ = Γ} σ σ' → _∼Sub_ {Γ = Γ} σ' σ
 
+-- Equivalence of terms
 data _∼_ {n : ℕ} {Γ : Con n} : {A : Ty n} → Tm Γ A → Tm Γ A → Type where
   eqv : {A : Ty n} (x : A ∈ Γ) → var x ∼ var x
-  eq  : {n' : ℕ} {Γ' : Con n'} {A : Ty n'} (ps : PS Γ' A) (t u : Tm Γ' A) (τ : SubTy n n') {σ σ' : Sub τ Γ Γ'} (p : _∼Sub_ {Γ = Γ} σ σ') → t [ σ ] ∼ u [ σ' ]
+  eq  : {n' : ℕ} {Γ' : Con n'} {A : Ty n'} (ps : PS Γ' A) (t t' : Tm Γ' A) (τ : SubTy n n') {σ σ' : Sub τ Γ Γ'} (p : _∼Sub_ {Γ = Γ} σ σ') → t [ σ ] ∼ t' [ σ' ]
   -- TODO: can this be derived???
   ∼trans : {A : Ty n} {t u v : Tm Γ A} (p : t ∼ u) (q : u ∼ v) → t ∼ v
 
@@ -103,6 +112,7 @@ eqs ps t u τ σ = eq ps t u τ (∼SubRefl σ)
 eqs' : {n n' : ℕ} {Γ : Con n} {Γ' : Con n'} {A : Ty n'} (ps : PS Γ' A) (t : Tm Γ' A) (τ : SubTy n n') {σ σ' : Sub τ Γ Γ'} → σ ∼Sub σ' → t [ σ ] ∼ t [ σ' ]
 eqs' ps t τ p = eq ps t t τ p
 
+-- Equivalence of substitutions is reflexive
 ∼refl : {n : ℕ} {Γ : Con n} {A : Ty n} (t : Tm Γ A) → t ∼ t
 ∼refl (var x) = eqv x
 ∼refl (coh {n'} {Γ'} ps τ σ) = subst₂ _∼_ (cong (coh ps τ) (∘UnitL σ)) (cong (coh ps τ) (∘UnitL σ)) (eq ps (coh ps (SubTyId n') (SubId Γ')) (coh ps (SubTyId n') (SubId Γ')) τ (∼SubRefl σ))
@@ -118,7 +128,7 @@ eqs' ps t τ p = eq ps t t τ p
 -- ∼trans : {n : ℕ} {Γ : Con n} {A : Ty n} {t u v : Tm Γ A} → t ∼ u → u ∼ v → t ∼ v
 -- ∼trans (eqv x) q = q
 -- ∼trans (eq ps t u τ p) q = {!!}
-  -- -- basically, if q is (eqv x), we are as above, and if q is eq then we can use the same eq ps for both
+  -- -- basically, if q is (eqv x), we are as above, and if q is eq then we can use the same eq ps for both => NO!
 
 _∼Sub_ {Γ' = ε} σ σ' = Unit
 _∼Sub_ {Γ = Γ} {Γ' = Γ' ▹ A} (σ , t) (σ' , t') = (_∼Sub_ {Γ = Γ} σ σ') × t ∼ t'

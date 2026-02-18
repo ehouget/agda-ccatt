@@ -7,9 +7,9 @@ infixl 6 _$_
 
 data Tm {n : ℕ} (Γ : Con n) : Ty n → Type where
   var : {A : Ty n} → A ∈ Γ → Tm Γ A
-  I : {A : Ty n} → Tm Γ (A ⇒ A)
-  K : {A B : Ty n} → Tm Γ (A ⇒ B ⇒ A)
-  S : {A B C : Ty n} → Tm Γ ((A ⇒ B ⇒ C) ⇒ (A ⇒ B) ⇒ A ⇒ C)
+  I   : {A : Ty n} → Tm Γ (A ⇒ A)
+  K   : {A B : Ty n} → Tm Γ (A ⇒ B ⇒ A)
+  S   : {A B C : Ty n} → Tm Γ ((A ⇒ B ⇒ C) ⇒ (A ⇒ B) ⇒ A ⇒ C)
   _$_ : {A B : Ty n} → Tm Γ (A ⇒ B) → Tm Γ A → Tm Γ B
 
 infix 5 _∼_
@@ -48,9 +48,11 @@ Sub : {n n' : ℕ} (τ : SubTy n n') (Γ : Con n) (Γ' : Con n') → Type
 Sub _ Γ ε = Unit
 Sub τ Γ (Γ' ▹ A) = Sub τ Γ Γ' × Tm Γ (A [ τ ]')
 
+-- Terminal substitution
 SubTerm : {n : ℕ} (Γ : Con n) → Sub (SubTyId n) Γ ε
 SubTerm Γ = tt
 
+-- Application of a substitution
 _[_] : {n : ℕ} {Γ : Con n} {n' : ℕ} {Γ' : Con n'} {A : Ty n'} → Tm Γ' A → {τ : SubTy n n'} (σ : Sub τ Γ Γ') → Tm Γ (A [ τ ]')
 var here [ σ , t ] = t
 var (drop x) [ σ , t ] = var x [ σ ]
@@ -59,6 +61,7 @@ K [ σ ] = K
 S [ σ ] = S
 (t $ u) [ σ ] = t [ σ ] $ u [ σ ]
 
+-- Equivalence of substitutions
 _∼Sub_ : {n n' : ℕ} {Γ : Con n} {Γ' : Con n'} {τ : SubTy n n'} (σ σ' : Sub τ Γ Γ') → Type
 _∼Sub_ {Γ' = ε} tt tt = Unit
 _∼Sub_ {Γ' = Γ' ▹ A} (σ , t) (σ' , t') = (σ ∼Sub σ') × (t ∼ t')
@@ -94,11 +97,11 @@ _[_]∼ {σ = σ} {σ'} (∼sym p) q = ∼sym (p [ ∼SubSym q ]∼)
 _[_]∼ {σ = σ} {σ'} (∼trans p p') q = ∼trans (p [ q ]∼) (p' [ ∼SubRefl σ' ]∼)
 
 -- Composition of substitutions
-
 _∘_ : {n n' n'' : ℕ} {Γ : Con n} {Γ' : Con n'} {Γ'' : Con n''} {τ : SubTy n n'} {τ' : SubTy n' n''} → Sub τ' Γ' Γ'' → Sub τ Γ Γ' → Sub (τ' ∘' τ) Γ Γ''
 _∘_ {Γ'' = ε} σ' σ = tt
 _∘_ {Γ'' = Γ'' ▹ A} (σ' , t') σ = (σ' ∘ σ) , (t' [ σ ])
 
+-- Functoriality of substitution application
 [∘] : {n n' n'' : ℕ} {Γ : Con n} {Γ' : Con n'} {Γ'' : Con n''} {A : Ty n''} {τ : SubTy n n'} {τ' : SubTy n' n''} (t : Tm Γ'' A) (σ' : Sub τ' Γ' Γ'') (σ : Sub τ Γ Γ') →
       -- subst (Tm Γ) ([∘'] {A = A} {τ' = τ'} {τ = τ}) (t [ σ' ] [ σ ]) ≡ t [ σ' ∘ σ ]
       t [ σ' ] [ σ ] ≡ t [ σ' ∘ σ ]
