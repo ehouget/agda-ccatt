@@ -1,4 +1,5 @@
 --- Categorical combinators
+-- See for instance https://www.irif.fr/~curien/CIRM-2014.pdf
 
 open import Prelude
 open import Ty
@@ -26,7 +27,10 @@ data _∼_ {n : ℕ} {Γ : Con n} : {A : Ty n} → Tm Γ A → Tm Γ A → Type 
   psnd : {A B C : Ty n} (f : Tm Γ (A ⇒ B)) (g : Tm Γ (A ⇒ C)) → pair f g $ csnd ∼ g
   pnat : {A' A B C : Ty n} (f : Tm Γ (A' ⇒ A)) (g : Tm Γ (A ⇒ B)) (h : Tm Γ (A ⇒ C)) → f $ pair g h ∼ pair (f $ g) (f $ h)
   pext : {A B : Ty n} → pair cfst csnd ∼ id {A = A × B}
-  evabs : {A B : Ty n} (t : Tm (Γ ▹ A) B) (u : Tm Γ B) → {!? $ app!} ∼ {!!} -- pair (abs f) g $ app ∼ pair id g $ {!f!}
+  text : {A : Ty n} (f : Tm Γ 𝟙) → f ∼ term
+  evabs : {A B : Ty n} (t : Tm (Γ ▹ A) B) (u : Tm Γ A) → {!!} $ app ∼ {!!} -- pair (abs f) g $ app ∼ pair id g $ {!f!}
+  -- absc : ?
+  absapp : {A B : Ty n} → abs {!!} ∼ {!!}
   ∼refl : {A : Ty n} {t : Tm Γ A} → t ∼ t
   ∼sym : {A : Ty n} {t u : Tm Γ A} → t ∼ u → u ∼ t
   ∼trans : {A : Ty n} {t u v : Tm Γ A} → t ∼ u → u ∼ v → t ∼ v
