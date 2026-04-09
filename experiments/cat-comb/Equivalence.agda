@@ -5,7 +5,7 @@
 open import Prelude
 open import Ty
 import CT
-import CL
+import CC
 
 --- From CT to CL
 
