@@ -1,5 +1,5 @@
 ---
---- Our main theorem: CL and CT coincide
+--- Our main theorem: CC and CT coincide
 ---
 
 open import Prelude
