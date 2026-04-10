@@ -71,6 +71,9 @@ id {n} {Γ} {A} = coh PS⊢X⇒X (SubTy1 A) tt
 comp : {n : ℕ} {Γ : Con n} {A B C : Ty n} → Tm Γ (A , B) → Tm Γ (B , C) → Tm Γ (A , C)
 comp {A = A} {B} {C} f g = coh PSX⇒Y,Y⇒Z⊢X⇒Z (SubTy3 A B C) ((tt , f) , g)
 
+infixl 6 _·_
+_·_ = comp
+
 term : {n : ℕ} {Γ : Con n} {A : Ty n} → Tm Γ (A , 𝟙)
 term = coh PS⊢X⇒1 (SubTy1 _) tt
 
@@ -82,21 +85,6 @@ snd = coh PS⊢X×Y⇒Y (SubTy2 _ _) tt
 
 pair : {n : ℕ} {Γ : Con n} {X A B : Ty n} → Tm Γ (X , A) → Tm Γ (X , B) → Tm Γ (X , A × B)
 pair f g = coh PSX⇒Y,X⇒Z⊢X⇒Y×Z (SubTy3 _ _ _) ((tt , f) , g)
-
--- K : {n : ℕ} {Γ : Con n} {A B : Ty n} → Tm Γ (A ⇒ B ⇒ A)
--- K {n} {Γ} {A} {B} = coh PS⊢X⇒Y⇒X (SubTy2 A B) tt
-
--- S : {n : ℕ} {Γ : Con n} {A B C : Ty n} → Tm Γ ((A ⇒ B ⇒ C) ⇒ (A ⇒ B) ⇒ A ⇒ C)
--- S {n} {Γ} {A} {B} {C} = coh PS⊢[X⇒Y⇒Z]⇒[X⇒Y]⇒X⇒Z (SubTy3 A B C) tt
-
--- ap : {n : ℕ} {Γ : Con n} {A B : Ty n} → Tm Γ (A ⇒ B) → Tm Γ A → Tm Γ B
--- ap {n} {Γ} {A} {B} t u = coh PSX⇒Y,X⊢Y (SubTy2 A B) ((tt , t) , u)
-
--- ap2 : {n : ℕ} {Γ : Con n} {A B C : Ty n} → Tm Γ (A ⇒ B ⇒ C) → Tm Γ A → Tm Γ B → Tm Γ C
--- ap2 t u v = ap (ap t u) v
-
--- ap3 : {n : ℕ} {Γ : Con n} {A B C D : Ty n} → Tm Γ (A ⇒ B ⇒ C ⇒ D) → Tm Γ A → Tm Γ B → Tm Γ C → Tm Γ D
--- ap3 t u v w = ap (ap2 t u v) w
 
 ---
 --- Relations
@@ -164,6 +152,22 @@ _[_]∼ : {n n' : ℕ} {τ : SubTy n n'} {Γ : Con n} {Γ' : Con n'} {A : Arr n'
 var here [ p , q ]∼ = q
 var (drop x) [ p , q ]∼ = (var x) [ p ]∼
 coh ps τ σ [ p ]∼ = {!!} -- equivalent substitutions are closed under left composition
+
+---
+--- Deriving basic relations
+---
+
+unitl : {n : ℕ} {Γ : Con n} {A B : Ty n} (f : Tm Γ (A , B)) → id · f ∼ f
+unitl f = eqs PSX⇒Y⊢X⇒Y (id · var here) (var here) (SubTy2 _ _) (tt , f)
+
+unitr : {n : ℕ} {Γ : Con n} {A B : Ty n} (f : Tm Γ (A , B)) → f · id ∼ f
+unitr f = eqs PSX⇒Y⊢X⇒Y (var here · id) (var here) (SubTy2 _ _) (tt , f)
+
+pfst : {n : ℕ} {Γ : Con n} {X A B : Ty n} (f : Tm Γ (X , A)) (g : Tm Γ (X , B)) → pair f g · fst ∼ f
+pfst f g = eqs PSX⇒Y,X⇒Z⊢X⇒Y (pair (var (drop here)) (var here) · fst) (var (drop here)) (SubTy3 _ _ _) ((tt , f) , g)
+
+psnd : {n : ℕ} {Γ : Con n} {X A B : Ty n} (f : Tm Γ (X , A)) (g : Tm Γ (X , B)) → pair f g · snd ∼ g
+psnd f g = eqs PSX⇒Y,X⇒Z⊢X⇒Z (pair (var (drop here)) (var here) · snd) (var here) (SubTy3 _ _ _) ((tt , f) , g)
 
 -- apI : {n : ℕ} {Γ : Con n} {A : Ty n} (t : Tm Γ A) → ap I t ∼ t
 -- apI {n} {Γ} {A} t = eqs PSX⊢X (ap I (var here)) (var here) τ σ

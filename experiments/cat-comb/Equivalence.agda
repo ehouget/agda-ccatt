@@ -50,19 +50,19 @@ G CC.fst = CT.fst
 G CC.snd = CT.snd
 
 G∼ : {n : ℕ} {Γ : Con n} {A : Arr n} {t u : CC.Tm Γ A} → t CC.∼ u → G t CT.∼ G u
-G∼ t = {!!}
--- G∼ (CC.Iβ t) = CT.apI (G t)
--- G∼ (CC.Kβ t u) = CT.apK (G t) (G u)
--- G∼ (CC.Sβ t u v) = CT.apS (G t) (G u) (G v)
--- G∼ CC.lamIβ = CT.lamIβ
--- G∼ CC.lamKβ = CT.lamKβ
--- G∼ CC.lamSβ = CT.lamSβ
--- G∼ CC.lamwk = CT.lamwk
--- G∼ CC.lamη = CT.lamη
--- G∼ (CC.∼$ p q) = CT.∼ap (G∼ p) (G∼ q)
--- G∼ CC.∼refl = CT.∼refl _
--- G∼ (CC.∼sym p) = CT.∼sym (G∼ p)
--- G∼ (CC.∼trans p q) = CT.∼trans (G∼ p) (G∼ q)
+G∼ (CC.pfst f g) = CT.pfst (G f) (G g)
+G∼ (CC.psnd f g) = CT.psnd (G f) (G g)
+G∼ (CC.pnat f g h) = {!!}
+G∼ CC.pext = {!!}
+G∼ (CC.text f) = {!!}
+G∼ (CC.unitl f) = CT.unitl (G f)
+G∼ (CC.unitr f) = CT.unitr (G f)
+G∼ (CC.assoc f g h) = {!!}
+G∼ (CC.∼· f g) = {!!}
+G∼ (CC.∼pair t t₁) = {!!}
+G∼ CC.∼refl = CT.∼refl (G _)
+G∼ (CC.∼sym p) = CT.∼sym (G∼ p)
+G∼ (CC.∼trans p q) = {!!}
 
 GSub : {n n' : ℕ} {Γ : Con n} {Γ' : Con n'} {τ : SubTy n n'} → CC.Sub τ Γ Γ' → CT.Sub τ Γ Γ'
 GSub {Γ' = ε} σ = tt
