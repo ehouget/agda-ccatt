@@ -8,13 +8,13 @@ open import Ty
 infixl 6 _·_
 
 data Tm {n : ℕ} (Γ : Con n) : Arr n → Type where
-  var : {A : Arr n} → A ∈ Γ → Tm Γ A
-  id : {A : Ty n} → Tm Γ (A , A)
-  _·_ : {A B C : Ty n} → Tm Γ (A , B) → Tm Γ (B , C) → Tm Γ (A , C)
+  var  : {A : Arr n} → A ∈ Γ → Tm Γ A
+  id   : {A : Ty n} → Tm Γ (A , A)
+  _·_  : {A B C : Ty n} → Tm Γ (A , B) → Tm Γ (B , C) → Tm Γ (A , C)
   term : {A : Ty n} → Tm Γ (A , 𝟙)
   pair : {X A B : Ty n} → Tm Γ (X , A) → Tm Γ (X , B) → Tm Γ (X , A × B)
-  fst : {A B : Ty n} → Tm Γ (A × B , A)
-  snd : {A B : Ty n} → Tm Γ (A × B , B)
+  fst  : {A B : Ty n} → Tm Γ (A × B , A)
+  snd  : {A B : Ty n} → Tm Γ (A × B , B)
 
 infix 5 _∼_
 
@@ -32,7 +32,7 @@ data _∼_ {n : ℕ} {Γ : Con n} : {A : Arr n} → Tm Γ A → Tm Γ A → Type
   ∼· : {A B C : Ty n} {f f' : Tm Γ (A , B)} {g g' : Tm Γ (B , C)} → f ∼ f' → g ∼ g' → f · g ∼ f' · g'
   ∼pair : {X A B : Ty n} {f f' : Tm Γ (X , A)} {g g' : Tm Γ (X , B)} → f ∼ f' → g ∼ g' → pair f g ∼ pair f' g'
   ∼refl : {A : Arr n} {f : Tm Γ A} → f ∼ f
-  ∼sym : {A : Arr n} {f g : Tm Γ A} → f ∼ g → g ∼ f
+  ∼sym  : {A : Arr n} {f g : Tm Γ A} → f ∼ g → g ∼ f
   ∼trans : {A : Arr n} {f g h : Tm Γ A} → f ∼ g → g ∼ h → f ∼ h
 
 postulate

@@ -4,7 +4,7 @@ open import Prelude
 
 -- Types
 data Ty (n : ℕ) : Type where
-  X   : Fin n → Ty n
+  X : Fin n → Ty n
 
 -- An arrow
 Arr : ℕ → Type

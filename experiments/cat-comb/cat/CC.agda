@@ -8,18 +8,18 @@ infixl 6 _·_
 
 data Tm {n : ℕ} (Γ : Con n) : Arr n → Type where
   var : {A : Arr n} → A ∈ Γ → Tm Γ A
-  id : {A : Ty n} → Tm Γ (A , A)
+  id  : {A : Ty n} → Tm Γ (A , A)
   _·_ : {A B C : Ty n} → Tm Γ (A , B) → Tm Γ (B , C) → Tm Γ (A , C)
 
 infix 5 _∼_
 
 data _∼_ {n : ℕ} {Γ : Con n} : {A : Arr n} → Tm Γ A → Tm Γ A → Type where
-  unitl : {A B : Ty n} (f : Tm Γ (A , B)) → id · f ∼ f
-  unitr : {A B : Ty n} (f : Tm Γ (A , B)) → f · id ∼ f
-  assoc : {A B C D : Ty n} (f : Tm Γ (A , B)) (g : Tm Γ (B , C)) (h : Tm Γ (C , D)) → (f · g) · h ∼ f · (g · h)
-  ∼· : {A B C : Ty n} {f f' : Tm Γ (A , B)} {g g' : Tm Γ (B , C)} → f ∼ f' → g ∼ g' → f · g ∼ f' · g'
-  ∼refl : {A : Arr n} {f : Tm Γ A} → f ∼ f
-  ∼sym : {A : Arr n} {f g : Tm Γ A} → f ∼ g → g ∼ f
+  unitl  : {A B : Ty n} (f : Tm Γ (A , B)) → id · f ∼ f
+  unitr  : {A B : Ty n} (f : Tm Γ (A , B)) → f · id ∼ f
+  assoc  : {A B C D : Ty n} (f : Tm Γ (A , B)) (g : Tm Γ (B , C)) (h : Tm Γ (C , D)) → (f · g) · h ∼ f · (g · h)
+  ∼·     : {A B C : Ty n} {f f' : Tm Γ (A , B)} {g g' : Tm Γ (B , C)} → f ∼ f' → g ∼ g' → f · g ∼ f' · g'
+  ∼refl  : {A : Arr n} {f : Tm Γ A} → f ∼ f
+  ∼sym   : {A : Arr n} {f g : Tm Γ A} → f ∼ g → g ∼ f
   ∼trans : {A : Arr n} {f g h : Tm Γ A} → f ∼ g → g ∼ h → f ∼ h
 
 WkTmTy : {n : ℕ} {Γ : Con n} {A B : Ty n} → Tm Γ (A , B) → Tm (WkCon Γ) (WkTy A , WkTy B)
@@ -36,10 +36,12 @@ PSTm : {n : ℕ} {Γ : Con n} {A : Arr n} → PS Γ A → Tm Γ A
 PSTm start = id
 PSTm (ext ps) = WkTmTm (WkTmTy (PSTm ps)) · var here
 
-postulate
-  -- TODO: we do not formalize pasting schemes for now and simply assume that pasting schemes are contractible
-  -- PSTm : {n : ℕ} {Γ : Con n} {A : Arr n} → PS Γ A → Tm Γ A
-  PSEq : {n : ℕ} {Γ : Con n} {A : Arr n} (ps : PS Γ A) (t u : Tm Γ A) → t ∼ u
+PSEq : {n : ℕ} {Γ : Con n} {A : Arr n} (ps : PS Γ A) (t u : Tm Γ A) → t ∼ u
+PSEq start id id = ∼refl
+PSEq start id (u · u') = {!!}
+PSEq start (t · t') id = {!!}
+PSEq start (t · t') (u · u') = {!!}
+PSEq (ext ps) t u = {!!}
 
 -- Substitutions
 Sub : {n n' : ℕ} (τ : SubTy n n') (Γ : Con n) (Γ' : Con n') → Type
