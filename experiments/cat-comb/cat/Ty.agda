@@ -88,10 +88,12 @@ data _∈_ {n : ℕ} (A : Arr n) : Con n → Set where
   here : {Γ : Con n} → A ∈ (Γ ▹ A)
   drop : {Γ : Con n} {B : Arr n} → A ∈ Γ → A ∈ (Γ ▹ B)
 
+WkArr : {n : ℕ} → Arr n → Arr (suc n)
+WkArr (A , B) = (WkTy A , WkTy B)
+
 WkCon : {n : ℕ} → Con n → Con (suc n)
 WkCon ε = ε
 WkCon (Γ ▹ (A , B)) = WkCon Γ ▹ (WkTy A , WkTy B)
-
 
 Wk∈ : {n : ℕ} {Γ : Con n} {A B : Ty n} → (A , B) ∈ Γ → (WkTy A , WkTy B) ∈ WkCon Γ
 Wk∈ here = here

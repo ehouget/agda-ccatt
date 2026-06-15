@@ -2,8 +2,14 @@ open import Prelude
 open import Ty
 
 data PS : {n : ℕ} (Γ : Con n) (A : Arr n) → Set where
-  start : PS {n = 1} ε (X (# 0) , X (# 0))
-  ext   : {n : ℕ} {Γ : Con n} {A B : Ty n} → PS Γ (A , B) → PS {n = suc n} (WkCon Γ ▹ (WkTy B , X (# 0))) (WkTy A , X (# 0))
+   start : PS {n = 1} ε (X (# 0) , X (# 0))
+   ext   : {k : ℕ}
+           {Γ : Con (suc k)} -- context with at least one object
+         → PS {n = suc k} Γ (X (fromℕ< {m = k} (s≤s ≤-refl)) , X (# 0)) -- PS Γ (X (# k) , X (# 0))
+         → PS {n = suc (suc k)}
+           (WkCon Γ ▹ (X (# 1) , X (# 0)))
+           (X (fromℕ< {m = suc k} (s≤s (s≤s ≤-refl))) , X (# 0)) -- PS (WkCon Γ ▹ (X (# 1) , X (# 0))) (X (# k+1) , X (# 0))
+
 
 PS⊢X⇒X : PS {n = 1} ε (X (# 0) , X (# 0))
 PS⊢X⇒X = start

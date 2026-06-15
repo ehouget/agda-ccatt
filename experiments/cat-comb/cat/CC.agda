@@ -36,12 +36,228 @@ PSTm : {n : ℕ} {Γ : Con n} {A : Arr n} → PS Γ A → Tm Γ A
 PSTm start = id
 PSTm (ext ps) = WkTmTm (WkTmTy (PSTm ps)) · var here
 
+≡→∼ : {n : ℕ} {Γ : Con n} {A : Arr n} {t u : Tm Γ A} → t ≡ u → t ∼ u
+≡→∼ refl = ∼refl
+
+------ Début contribution Eliott Houget ------
+
+-----------------------------------------------------------------------
+-- Proof of PSEq
+-----------------------------------------------------------------------
+
+-- sub proof system of term derivation
+data NormTm {n : ℕ} (Γ : Con n) : Arr n → Type where
+  norm-id : {A : Ty n} → NormTm Γ (A , A)
+  _▸_     : {A B C : Ty n} → NormTm Γ (A , B) → (B , C) ∈ Γ → NormTm Γ (A , C)
+
+-- concatenation of two normal terms
+merge-NormTm : {n : ℕ} {Γ : Con n} {A B C : Ty n} (t : NormTm Γ (A , B)) (u : NormTm Γ (B , C)) → NormTm Γ (A , C)
+merge-NormTm t norm-id = t
+merge-NormTm t (u ▸ x) = (merge-NormTm t u) ▸ x
+
+-- association of the concatenation of two normal terms
+merge-NormTm-assoc : {n : ℕ} {Γ : Con n} {A B C D : Ty n} (t : NormTm Γ (A , B)) (u : NormTm Γ (B , C)) (v : NormTm Γ (C , D)) → merge-NormTm t (merge-NormTm u v) ≡ merge-NormTm (merge-NormTm t u) v
+merge-NormTm-assoc t u norm-id = refl
+merge-NormTm-assoc t u (v ▸ x) = cong (_▸ x) (merge-NormTm-assoc t u v)
+
+-- Transform a term in its normal form (projection of the proof system on the sub proof system)
+normalize : {n : ℕ} {Γ : Con n} {A : Arr n} (t : Tm Γ A) → NormTm Γ A
+normalize (var x)  = norm-id ▸ x
+normalize id       = norm-id
+normalize (t · t') = merge-NormTm (normalize t) (normalize t')
+
+-- transform a normal term into a general term (inclusion of the sub proof system in the general proof system)
+denormalize : {n : ℕ} {Γ : Con n} {A : Arr n} (t : NormTm Γ A) → Tm Γ A
+denormalize norm-id = id
+denormalize (t ▸ x) = (denormalize t) · var x
+
+-- proposition : ∀ t, (denormalize (normalize t)) ∼ t
+denormalize-normalize∼ : {n : ℕ} {Γ : Con n} {A : Arr n} (t : Tm Γ A) → denormalize (normalize t) ∼ t
+denormalize-normalize∼ (var x)  = unitl (var x)
+denormalize-normalize∼ id       = ∼refl
+denormalize-normalize∼ (t · t') = ∼trans (lem-denormalize-normalize∼ (normalize t) (normalize t')) (∼· (denormalize-normalize∼ t) (denormalize-normalize∼ t'))
+  where
+  lem-denormalize-normalize∼ : {n : ℕ} {Γ : Con n} {A B C : Ty n} (t : NormTm Γ (A , B)) (t' : NormTm Γ (B , C)) → denormalize (merge-NormTm t t') ∼ (denormalize t) · (denormalize t')
+  lem-denormalize-normalize∼ t norm-id  = ∼sym (unitr (denormalize t))
+  lem-denormalize-normalize∼ t (t' ▸ x) = ∼trans (∼· (lem-denormalize-normalize∼ t t') ∼refl) (assoc (denormalize t) (denormalize t') (var x))
+
+-- there is no loop in the context of a pasting scheme
+no-loop-in-PSCon : {n : ℕ} {Γ : Con n} {A : Arr n} (ps : PS Γ A) {x y : Ty n} {eq : x ≡ y} → ¬ ((x , y) ∈ Γ)
+no-loop-in-PSCon ps {eq = refl} = lem-no-loop-in-PSCon ps
+  where
+  lem-no-loop-in-PSCon : {n : ℕ} {Γ : Con n} {A : Arr n} (ps : PS Γ A) {B : Ty n} → ¬ ((B , B) ∈ Γ)
+  lem-no-loop-in-PSCon (ext ps) (drop k) = (lem-WkCon-dont-add-loop (lem-no-loop-in-PSCon ps)) k
+    where
+    lem-WkCon-dont-add-loop : {n : ℕ} {Γ : Con n} {A : Ty (suc n)} → ({B : Ty n} → (¬((B , B) ∈ Γ))) → (¬((A , A) ∈ (WkCon Γ)))
+    lem-WkCon-dont-add-loop {Γ = ε ▹ (X x , X x)}               f here     = f here
+    lem-WkCon-dont-add-loop {Γ = Γ ▹ (X w , X x) ▹ (X y , X y)} f here     = f here
+    lem-WkCon-dont-add-loop {Γ = Γ ▹ (X w , X x) ▹ (X y , X z)} f (drop k) = (lem-WkCon-dont-add-loop (λ t → f (drop t))) k
+
+-- there is no long arrow to 0 in the context of pasting scheme
+no-long-arrow-to-0-in-PSCon : {n : ℕ} {Γ : Con (suc (suc n))} {A : Arr (suc (suc n))} (ps : PS Γ A) {k : Fin n} → ¬((X (suc (suc k)) , (X (# 0))) ∈ Γ)
+no-long-arrow-to-0-in-PSCon {suc n} (ext ps) (drop k) = (lem-WkCon-dont-add-long-arrow-to-0 ((no-long-arrow-to-0-in-PSCon ps))) k
+  where
+  lem-WkCon-dont-add-long-arrow-to-0 : {n : ℕ} {Γ : Con (suc (suc n))}
+                                     → ({k : Fin n} → ¬((X (suc (suc k)) , (X (# 0))) ∈ Γ))
+                                     → ({k : Fin (suc n)} → ¬((X (suc (suc k)) , (X (# 0))) ∈ (WkCon Γ)))
+  lem-WkCon-dont-add-long-arrow-to-0 {Γ = ε ▹ (X x₁ , X y₁)} f (drop ())
+  lem-WkCon-dont-add-long-arrow-to-0 {Γ = Γ ▹ (X x₂ , X y₂) ▹ (X x₁ , X y₁)} f (drop k) = (lem-WkCon-dont-add-long-arrow-to-0 (λ x → f (drop x))) k
+
+
+-- Arrows (x_i , x_j) in a pasting scheme context imply i ≥ j
+Arr-in-PSCon-are-forward : {n : ℕ} {Γ : Con n} {A : Arr n} (ps : PS Γ A) {x y : Fin n} → (X x , X y) ∈ Γ → x ≥Fin y
+Arr-in-PSCon-are-forward (ext start)    here     = z≤n
+Arr-in-PSCon-are-forward (ext (ext ps)) here     = z≤n
+Arr-in-PSCon-are-forward (ext (ext ps)) (drop k) = (lem-WkCon-keep-Arr-forward (Arr-in-PSCon-are-forward (ext ps)))  k
+  where
+  lem-WkCon-keep-Arr-forward : {n : ℕ} {Γ : Con n}
+                             → ({x₁ y₁ : Fin n} → (X x₁ , X y₁) ∈ Γ → x₁ ≥Fin y₁)
+                             → ({x₂ y₂ : Fin (suc n)} → (X x₂ , X y₂) ∈ WkCon Γ → x₂ ≥Fin y₂)
+  lem-WkCon-keep-Arr-forward {Γ = ε ▹ (X i , X j)}        f {x₂ = .(suc i)} {y₂ = .(suc j)} here     = s≤s (f here)
+  lem-WkCon-keep-Arr-forward {Γ = Γ ▹ neck ▹ (X i , X j)} f {x₂ = .(suc i)} {y₂ = .(suc j)} here     = s≤s (f here)
+  lem-WkCon-keep-Arr-forward {Γ = Γ ▹ neck ▹ (X i , X j)} f {x₂ = x₂}       {y₂ = y₂}       (drop k) = (lem-WkCon-keep-Arr-forward λ l → f (drop l)) k
+
+Arr-of-NormTm-in-PSCon-are-forward : {n : ℕ} {Γ : Con n} {A : Arr n} (ps : PS Γ A) {x y : Fin n} → (t : NormTm Γ (X x , X y)) → x ≥Fin y
+Arr-of-NormTm-in-PSCon-are-forward start    norm-id             = ≤-refl
+Arr-of-NormTm-in-PSCon-are-forward (ext ps) norm-id             = ≤-refl
+Arr-of-NormTm-in-PSCon-are-forward (ext ps) (_▸_ {B = X k} t x) = ≤-trans (Arr-in-PSCon-are-forward (ext ps) x) (Arr-of-NormTm-in-PSCon-are-forward (ext ps) t)
+
+
+-- if a arrow is contain in a weak context, then it's a weak arrow
+Ty∈WkCon→WkTy∈Con : {n : ℕ} {B : Arr (suc n)} {Γ : Con n} → B ∈ (WkCon Γ) → ∃[ A ] (WkArr A ≡ B ∧ A ∈ Γ)
+Ty∈WkCon→WkTy∈Con {Γ = ε ▹ head} here = head , refl , here
+Ty∈WkCon→WkTy∈Con {Γ = Γ ▹ neck ▹ head} here = head , refl , here
+Ty∈WkCon→WkTy∈Con {Γ = Γ ▹ neck ▹ head} (drop k) = proj₁ (Ty∈WkCon→WkTy∈Con k) , proj₁ (proj₂ (Ty∈WkCon→WkTy∈Con k)) , drop (proj₂ (proj₂ (Ty∈WkCon→WkTy∈Con k)))
+
+WkArr-injective : {n : ℕ} {Γ : Con n} {A B : Arr n} → WkArr A ≡ WkArr B → A ≡ B
+WkArr-injective {A = X i , X j} {B = X .i , X .j} refl = refl
+
+drop-injective : {n : ℕ} {Γ : Con n} {A B : Arr n} {x y : A ∈ Γ} → drop {B = B} x ≡ drop {B = B} y → x ≡ y
+drop-injective refl = refl
+
+WkArr∈WkCon→Arr∈Con : {n : ℕ} {Γ : Con n} {A B : Ty n} → (WkTy A , WkTy B) ∈ WkCon Γ → (A , B) ∈ Γ
+WkArr∈WkCon→Arr∈Con {Γ = Γ ▹ (X i , X j)} {A = X .i} {B = X .j} here = here
+WkArr∈WkCon→Arr∈Con {Γ = Γ ▹ (X i , X j)} {A = X x} {B = X y} (drop k) = drop (WkArr∈WkCon→Arr∈Con k)
+
+WkArr∈WkCon→Arr∈Con-injective : {n : ℕ} {Γ : Con n} {A B : Ty n} {x y : (WkTy A , WkTy B) ∈ WkCon Γ} → WkArr∈WkCon→Arr∈Con x ≡ WkArr∈WkCon→Arr∈Con y → x ≡ y
+WkArr∈WkCon→Arr∈Con-injective {Γ = Γ ▹ (X i , X j)} {A = X .i} {B = X .j} {x = here} {y = here} eq = refl
+WkArr∈WkCon→Arr∈Con-injective {Γ = Γ ▹ (X i , X j)} {A = X k} {B = X l} {x = drop x} {y = drop y} eq = cong drop (WkArr∈WkCon→Arr∈Con-injective (drop-injective eq))
+
+-- there is no 0 in the weakening of a context of a pasting scheme
+no-0-in-WkPSCon : {n : ℕ} {Γ : Con n} {A : Arr n} (ps : PS Γ A) {y : Ty (suc n)} → ¬ ((y , X (# 0)) ∈ WkCon Γ)
+no-0-in-WkPSCon (ext ps) (drop k) = (lem-WkCon-dont-add-0 (no-0-in-WkPSCon ps)) k
+  where
+  lem-WkCon-dont-add-0 : {n : ℕ} {Γ : Con n}
+                       → ({y : Ty (suc n)} → ¬((y , X (# 0)) ∈ WkCon Γ))
+                       → ({y : Ty (suc (suc n))} → ¬((y , X (# 0)) ∈ (WkCon (WkCon Γ))))
+  lem-WkCon-dont-add-0 {Γ = ε ▹ (X x₁ , X y₁)} f (drop ())
+  lem-WkCon-dont-add-0 {Γ = Γ ▹ (X x₂ , X y₂) ▹ (X x₁ , X y₁)} f (drop k) = (lem-WkCon-dont-add-0 (λ x → f (drop x))) k
+
+no-repetition-in-PSCon' : {n : ℕ} {Γ : Con n} {A B C : Arr n} (ps : PS (Γ ▹ B) A) → C ∈ Γ → B ≢ C
+no-repetition-in-PSCon' (ext (ext start)) here ()
+no-repetition-in-PSCon' (ext (ext start)) (drop ()) eq
+no-repetition-in-PSCon' (ext {Γ = Γ} ps) k eq = contradiction ((subst (λ x → x ∈ WkCon Γ) (sym eq) k)) (no-0-in-WkPSCon ps)
+
+-- each arrow in a pasting scheme context appears only once
+no-repetition-in-PSCon : {n : ℕ} {Γ : Con n} {A B : Arr n} (ps : PS Γ A) (x y : B ∈ Γ) → x ≡ y
+no-repetition-in-PSCon ps here here = refl
+no-repetition-in-PSCon ps here (drop y) = contradiction refl (no-repetition-in-PSCon' ps y)
+no-repetition-in-PSCon ps (drop x) here = contradiction refl (no-repetition-in-PSCon' ps x)
+no-repetition-in-PSCon (ext ps) (drop x) (drop y) = cong drop ((lem-WkCon-dont-add-repetition (no-repetition-in-PSCon ps)) x y)
+  where
+  lem-WkCon-dont-add-repetition : {n : ℕ} {Γ : Con n}
+                              → ({B : Arr n} (x₁ y₁ : B ∈ Γ) → x₁ ≡ y₁)
+                              → ({B : Arr (suc n)} (x₂ y₂ : B ∈ WkCon Γ) → x₂ ≡ y₂)
+  lem-WkCon-dont-add-repetition {Γ = Γ} f {B = B} x₂ y₂ = aux (Ty∈WkCon→WkTy∈Con x₂) (Ty∈WkCon→WkTy∈Con y₂)
+    where
+    aux : (∃-syntax (λ Ax → WkArr Ax ≡ B ∧ (Ax ∈ Γ))) → (∃-syntax (λ Ay → WkArr Ay ≡ B ∧ (Ay ∈ Γ))) → x₂ ≡ y₂
+    aux (ax , refl , zx) (ay , eqy , zy) = aux2 (sym (WkArr-injective {Γ = Γ} eqy))
+      where
+      aux2 : (eqaxay : ax ≡ ay) → x₂ ≡ y₂
+      aux2 refl = WkArr∈WkCon→Arr∈Con-injective (f (WkArr∈WkCon→Arr∈Con x₂) (WkArr∈WkCon→Arr∈Con y₂))
+
+-- arrows in pasting scheme have the form x_i+1 → x_i
+form-of-arrow-in-PSCon : {n : ℕ} {Γ : Con n} {A : Arr n} {x y : Fin n} (ps : PS Γ A) → (X x , X y) ∈ Γ → inject₁ x ≡ suc y
+form-of-arrow-in-PSCon {x = zero}        {y = zero}  ps       k        = ⊥-elim (no-loop-in-PSCon ps {eq = refl} k)
+form-of-arrow-in-PSCon {x = zero}        {y = suc y} ps       k        = contradiction (Arr-in-PSCon-are-forward ps k) (<⇒≱ (s≤s z≤n))
+form-of-arrow-in-PSCon {x = suc zero}    {y = zero}  ps       k        = refl
+form-of-arrow-in-PSCon {x = suc (suc x)} {y = zero}  ps       k        = ⊥-elim (no-long-arrow-to-0-in-PSCon ps k)
+form-of-arrow-in-PSCon {x = suc x}       {y = suc y} (ext ps) (drop k) = cong suc (form-of-arrow-in-PSCon ps (suc∈WkCon→∈ k))
+  where
+  suc∈WkCon→∈ : {n : ℕ} {Γ : Con n} {x y : Fin n} → (X (suc x) , X (suc y)) ∈ WkCon Γ → (X x , X y) ∈ Γ
+  suc∈WkCon→∈ {Γ = Γ ▹ (X i , X j)} here = here
+  suc∈WkCon→∈ {Γ = Γ ▹ (X i , X j)} (drop k) = drop (suc∈WkCon→∈ k)
+
+-- Important lemma : there is an unique normal term for an arrow in a pasting scheme
+lem-PSEq : {n : ℕ} {Γ : Con n} {A B : Arr n} (ps : PS Γ A) (t u : NormTm Γ B) → t ≡ u
+lem-PSEq start norm-id norm-id = refl
+lem-PSEq (ext ps) norm-id norm-id = refl
+lem-PSEq (ext ps) (norm-id {X k}) (_▸_ {B = X l} u y) = ⊥-elim (no-loop-in-PSCon (ext ps) {eq = cong (λ x → X x) (≤-antisym (Arr-of-NormTm-in-PSCon-are-forward (ext ps) u) (Arr-in-PSCon-are-forward (ext ps) y))} y)
+lem-PSEq (ext ps) (_▸_ {B = X k} t x) (norm-id {X l}) = ⊥-elim (no-loop-in-PSCon (ext ps) {eq = cong (λ x → X x) (≤-antisym (Arr-of-NormTm-in-PSCon-are-forward (ext ps) t) (Arr-in-PSCon-are-forward (ext ps) x))} x)
+lem-PSEq {B = src , X zero} (ext ps) (_▸_ {B = X zero} t x) _ = ⊥-elim (no-loop-in-PSCon (ext ps) {eq = refl} x)
+lem-PSEq {B = src , X zero} (ext ps) _ (_▸_ {B = X zero} u y) = ⊥-elim (no-loop-in-PSCon (ext ps) {eq = refl} y)
+lem-PSEq {B = src , X zero} (ext ps) (_▸_ {B = X (suc zero)} t x) (_▸_ {B = X (suc zero)} u y) = lem-PSEq-rec (no-repetition-in-PSCon (ext ps) x y)
+  where
+  lem-PSEq-rec : (eq : x ≡ y) → t ▸ x ≡ u ▸ y
+  lem-PSEq-rec refl = cong (_▸ x) (lem-PSEq (ext ps) t u)
+lem-PSEq {B = src , X zero} (ext ps) (_▸_ {B = X (suc (suc k))} t x) _ = ⊥-elim (no-long-arrow-to-0-in-PSCon (ext ps) x)
+lem-PSEq {B = src , X zero} (ext ps) _ (_▸_ {B = X (suc (suc l))} u y) = ⊥-elim (no-long-arrow-to-0-in-PSCon (ext ps) y)
+lem-PSEq {n} {B = src , X (suc m)} (ext ps) (_▸_ {B = X k} t x) (_▸_ {B = X l} u y) = aux (form-of-arrow-in-PSCon (ext ps) x) (form-of-arrow-in-PSCon (ext ps) y)
+  where
+  aux : (eqkm : inject₁ k ≡ suc (suc m)) (eqlm : inject₁ l ≡ suc (suc m)) → t ▸ x ≡ u ▸ y
+  aux eqkm eqlm = aux1 (inject₁-injective (trans eqkm (sym eqlm)))
+    where
+    aux1 : (eqlk : k ≡ l) → t ▸ x ≡ u ▸ y
+    aux1 refl = aux2 (no-repetition-in-PSCon (ext ps) x y)
+      where
+      aux2 : (eq : x ≡ y) → t ▸ x ≡ u ▸ y
+      aux2 refl = cong (_▸ x) (lem-PSEq (ext ps) t u)
+
+-- if two term have the same normalization, then there are similar
+≡NormTm→∼Tm : {n : ℕ} {Γ : Con n} {A : Arr n} (t u : Tm Γ A) → (normalize t ≡ normalize u) → t ∼ u
+≡NormTm→∼Tm t u eq = ∼trans (∼sym (denormalize-normalize∼ t)) (∼trans (≡→∼ (cong denormalize eq)) (denormalize-normalize∼ u))
+
+-- Theoreme : pasting scheme are contractible
 PSEq : {n : ℕ} {Γ : Con n} {A : Arr n} (ps : PS Γ A) (t u : Tm Γ A) → t ∼ u
-PSEq start id id = ∼refl
-PSEq start id (u · u') = {!!}
-PSEq start (t · t') id = {!!}
-PSEq start (t · t') (u · u') = {!!}
-PSEq (ext ps) t u = {!!}
+PSEq ps t u = ≡NormTm→∼Tm t u (lem-PSEq ps (normalize t) (normalize u))
+
+---------------------------------------------------------------------
+-- results and transformations not used
+---------------------------------------------------------------------
+
+Arr∈Con→WkArr∈WkCon : {n : ℕ} {Γ : Con n} {A B : Ty n} → (A , B) ∈ Γ → (WkTy A , WkTy B) ∈ WkCon Γ
+Arr∈Con→WkArr∈WkCon here = here
+Arr∈Con→WkArr∈WkCon (drop k) = drop (Arr∈Con→WkArr∈WkCon k)
+
+-- merge with norm-id at right do nothing
+merge-NormTm-norm-id : {n : ℕ} {Γ : Con n} {A : Arr n} (t : NormTm Γ A) → merge-NormTm norm-id t ≡ t
+merge-NormTm-norm-id norm-id = refl
+merge-NormTm-norm-id (t ▸ x) = cong (_▸ x) (merge-NormTm-norm-id t)
+
+-- proposition : if two terms are similar, then their normal form are equal -not used
+∼Tm→≡NormTm : {n : ℕ} {Γ : Con n} {A : Arr n} (f g : Tm Γ A) → f ∼ g → normalize f ≡ normalize g
+∼Tm→≡NormTm .(id · g) g (unitl .g) = merge-NormTm-norm-id (normalize g)
+∼Tm→≡NormTm .(g · id) g (unitr .g) = refl
+∼Tm→≡NormTm .(f · g · h) .(f · (g · h)) (assoc f g h) = sym (merge-NormTm-assoc (normalize f) (normalize g) (normalize h))
+∼Tm→≡NormTm .(f · g) .(f' · g') (∼· {f = f} {f' = f'} {g = g} {g' = g'} sim₁ sim₂) = subst (λ z → merge-NormTm (normalize f) (normalize g) ≡ merge-NormTm z (normalize g')) (∼Tm→≡NormTm f f' sim₁) (subst (λ z → merge-NormTm (normalize f) (normalize g) ≡ merge-NormTm (normalize f) z) (∼Tm→≡NormTm g g' sim₂) refl)
+∼Tm→≡NormTm f .f ∼refl = refl
+∼Tm→≡NormTm f g (∼sym sim) = sym (∼Tm→≡NormTm g f sim)
+∼Tm→≡NormTm f h (∼trans {g = g} sim₁ sim₂) = trans (∼Tm→≡NormTm f g sim₁) (∼Tm→≡NormTm g h sim₂)
+
+-- proposition : normalize and then denormalize the result is the same as doing nothing -not used
+normalize-denormalize≡id : {n : ℕ} {Γ : Con n} {A : Arr n} (t : NormTm Γ A) → normalize (denormalize t) ≡ t
+normalize-denormalize≡id norm-id = refl
+normalize-denormalize≡id (t ▸ x) = cong (_▸ x) (normalize-denormalize≡id t)
+
+-- proposition : if two normal terms are equal, then their denormalize form are similar -not used
+≡NormTm→∼denormTm : {n : ℕ} {Γ : Con n} {A : Arr n} {t u : NormTm Γ A} → t ≡ u → (denormalize t ∼ denormalize u)
+≡NormTm→∼denormTm refl = ∼refl
+
+------ Fin contribution Eliott ------
+
+
+
+
 
 -- Substitutions
 Sub : {n n' : ℕ} (τ : SubTy n n') (Γ : Con n) (Γ' : Con n') → Type
