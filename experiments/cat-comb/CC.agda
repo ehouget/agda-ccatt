@@ -41,7 +41,11 @@ data _∼_ {n : ℕ} {Γ : Con n} : {A : Arr n} → Tm Γ A → Tm Γ A → Type
 ---------------------------------------------------------
 
 proj-tm : {n : ℕ} {Γ : Con n} {A B : Ty n} (x : B ► A) → Tm Γ (A , B)
-proj-tm here = id
+proj-tm var = id
+proj-tm term = term
+proj-tm reorder = pair snd fst
+proj-tm (assoc x) = pair (pair (fst · id) (snd · fst)) (snd · snd) · proj-tm x
+proj-tm (merge x y) = pair (fst · proj-tm x) (snd · proj-tm y)
 proj-tm (left x) = fst · proj-tm x
 proj-tm (right x) = snd · proj-tm x
 
