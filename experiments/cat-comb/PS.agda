@@ -8,7 +8,7 @@ open import Ty
 
 data PS : {n : ℕ} (Γ : Con n) (A : Arr n) → Set where
   proj : {n : ℕ} {Γ : Con n} {x y : Ty n} → y ► x → PS Γ (x , y)
-  comp : {n : ℕ} {Γ : Con n} {x y z : Ty n} → PS Γ (x , y) →  (y , z) ∈ Γ → PS Γ (x , z)
+  comp : {n : ℕ} {Γ : Con n} {x y z : Ty n} → PS Γ (x , y) → (y , z) ∈ Γ → PS Γ (x , z)
   prod : {n : ℕ} {Γ : Con n} {x y z : Ty n} → PS Γ (x , y) → PS Γ (x , z) → PS Γ (x , y × z)
   void : {n : ℕ} {Γ : Con n} {x y : Ty n} → PS Γ (x , y) → PS Γ (x , 𝟙)
 

@@ -4,6 +4,7 @@
 
 open import Prelude
 open import Ty
+open import PS
 
 infixl 6 _·_
 
@@ -35,10 +36,30 @@ data _∼_ {n : ℕ} {Γ : Con n} : {A : Arr n} → Tm Γ A → Tm Γ A → Type
   ∼sym  : {A : Arr n} {f g : Tm Γ A} → f ∼ g → g ∼ f
   ∼trans : {A : Arr n} {f g h : Tm Γ A} → f ∼ g → g ∼ h → f ∼ h
 
-postulate
-  -- TODO: we do not formalize pasting schemes for now and simply assume that pasting schemes are contractible
-  PSTm : {n : ℕ} {Γ : Con n} {A : Arr n} → PS Γ A → Tm Γ A
-  PSEq : {n : ℕ} {Γ : Con n} {A : Arr n} (ps : PS Γ A) (t u : Tm Γ A) → t ∼ u
+---------------------------------------------------------
+-- Pasting scheme are inhabited
+---------------------------------------------------------
+
+proj-tm : {n : ℕ} {Γ : Con n} {A B : Ty n} (x : B ► A) → Tm Γ (A , B)
+proj-tm here = id
+proj-tm (left x) = fst · proj-tm x
+proj-tm (right x) = snd · proj-tm x
+
+PSTm : {n : ℕ} {Γ : Con n} {A : Arr n} → PS Γ A → Tm Γ A
+PSTm (proj x) = proj-tm x
+PSTm (comp ps x) = PSTm ps · var x
+PSTm (prod ps₁ ps₂) = pair (PSTm ps₁) (PSTm ps₂)
+PSTm (void ps) = term
+
+---------------------------------------------------------
+-- All terms in a pasting scheme are similar
+---------------------------------------------------------
+
+PSEq : {n : ℕ} {Γ : Con n} {A : Arr n} (ps : PS Γ A) (t u : Tm Γ A) → t ∼ u
+PSEq (proj x) t u = {!!}
+PSEq (comp ps x) t u = {!!}
+PSEq (prod ps₁ ps₂) t u = {!!}
+PSEq (void ps) t u = {!!}
 
 -- Substitutions
 Sub : {n n' : ℕ} (τ : SubTy n n') (Γ : Con n) (Γ' : Con n') → Type
