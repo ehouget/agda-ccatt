@@ -68,7 +68,15 @@ _∘'_ : {n n' n'' : ℕ} → SubTy n' n'' → SubTy n n' → SubTy n n''
 (A ∷ τ') ∘' τ = A [ τ ]' ∷ (τ' ∘' τ)
 
 SubTyUnitL : {n n' : ℕ} (τ : SubTy n n') → SubTyId n' ∘' τ ≡ τ
-SubTyUnitL {n} {n'} τ = {!!} -- standard material
+SubTyUnitL {n} {zero} [] = refl
+SubTyUnitL {n} {suc n'} (x ∷ τ) = cong (λ τ → x ∷ τ) (trans (lem τ) (SubTyUnitL τ))
+  where
+  lem : {n' : ℕ} (τ : SubTy n n') → (SubTyWk (SubTyId n') ∘' (x ∷ τ)) ≡ (SubTyId n' ∘' τ)
+  lem [] = refl
+  lem {suc n'} (x ∷ τ) = cong (λ τ → x ∷ τ) (
+    map WkTy (SubTyWk (SubTyId n')) ∘' (_ ∷ x ∷ τ) ≡⟨ {!!} ⟩
+    SubTyWk (SubTyId n') ∘' (x ∷ τ) ∎
+    )
 
 -- Applying a substition is an action
 [∘'] : {n n' n'' : ℕ} {A : Ty n''} {τ : SubTy n n'} {τ' : SubTy n' n''} → (A [ τ' ]' [ τ ]') ≡ (A [ τ' ∘' τ ]')
