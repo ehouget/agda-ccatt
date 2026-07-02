@@ -98,7 +98,7 @@ _[_]∼ {σ = σ} {σ'} (∼trans p p') q = ∼trans (p [ q ]∼) (p' [ ∼SubRe
 
 -- Composition of substitutions
 _∘_ : {n n' n'' : ℕ} {Γ : Con n} {Γ' : Con n'} {Γ'' : Con n''} {τ : SubTy n n'} {τ' : SubTy n' n''} → Sub τ' Γ' Γ'' → Sub τ Γ Γ' → Sub (τ' ∘' τ) Γ Γ''
-_∘_ {Γ'' = ε} σ' σ = tt
+_∘_ {Γ'' = ε} tt σ = tt
 _∘_ {Γ'' = Γ'' ▹ A} (σ' , t') σ = (σ' ∘ σ) , (t' [ σ ])
 
 -- Functoriality of substitution application
