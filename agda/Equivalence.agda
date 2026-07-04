@@ -35,7 +35,7 @@ FSub≡ (CT.coh ps τ' σ') σ = CL.[∘] (CL.PSTm ps) (FSub σ') (FSub σ) ∙ 
 F∼Sub {Γ' = ε} p = tt
 F∼Sub {Γ' = Γ' ▹ A} (p , q) = F∼Sub p , F∼ q
 
-FSub∘ {Γ'' = ε} σ' σ = refl
+FSub∘ {Γ'' = ε} tt σ = refl
 FSub∘ {Γ'' = Γ'' ▹ A} (σ' , t') σ = Σ-≡,≡→≡ (FSub∘ σ' σ , substConst _ _ ∙ FSub≡ t' σ)
 
 --- From CL to CT
