@@ -10,6 +10,10 @@ data Tm {n : ℕ} (Γ : Con n) : Ty n → Type where
   I   : {A : Ty n} → Tm Γ (A ⇒ A)
   K   : {A B : Ty n} → Tm Γ (A ⇒ B ⇒ A)
   S   : {A B C : Ty n} → Tm Γ ((A ⇒ B ⇒ C) ⇒ (A ⇒ B) ⇒ A ⇒ C)
+  P₁  : {A B : Ty n} → Tm Γ (A × B ⇒ A)
+  P₂  : {A B : Ty n} → Tm Γ (A × B ⇒ B)
+  P   : {A B : Ty n} → Tm Γ (A ⇒ B ⇒ A × B)
+  T   : Tm Γ 𝟙
   _$_ : {A B : Ty n} → Tm Γ (A ⇒ B) → Tm Γ A → Tm Γ B
 
 infix 5 _∼_
@@ -59,6 +63,10 @@ var (drop x) [ σ , t ] = var x [ σ ]
 I [ σ ] = I
 K [ σ ] = K
 S [ σ ] = S
+P₁ [ σ ] = P₁
+P₂ [ σ ] = P₂
+P [ σ ] = P
+T [ σ ] = T
 (t $ u) [ σ ] = t [ σ ] $ u [ σ ]
 
 -- Equivalence of substitutions
@@ -92,6 +100,10 @@ _[_]∼ {t = t} ∼refl q = lem t q
   lem I σ = ∼refl
   lem K σ = ∼refl
   lem S σ = ∼refl
+  lem P₁ σ = ∼refl
+  lem P₂ σ = ∼refl
+  lem P σ = ∼refl
+  lem T σ = ∼refl
   lem (t $ u) σ = ∼$ (lem t σ) (lem u σ)
 _[_]∼ {σ = σ} {σ'} (∼sym p) q = ∼sym (p [ ∼SubSym q ]∼)
 _[_]∼ {σ = σ} {σ'} (∼trans p p') q = ∼trans (p [ q ]∼) (p' [ ∼SubRefl σ' ]∼)
@@ -110,4 +122,8 @@ _∘_ {Γ'' = Γ'' ▹ A} (σ' , t') σ = (σ' ∘ σ) , (t' [ σ ])
 [∘] I σ' σ = refl
 [∘] K σ' σ = refl
 [∘] S σ' σ = refl
+[∘] P₁ σ' σ = refl
+[∘] P₂ σ' σ = refl
+[∘] P σ' σ = refl
+[∘] T σ' σ = refl
 [∘] (t $ u) σ' σ = cong₂ _$_ ([∘] t σ' σ) ([∘] u σ' σ)
