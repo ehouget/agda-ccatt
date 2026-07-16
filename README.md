@@ -1,7 +1,7 @@
 Unbiased cartesian closed categories formalized in Agda
 =======================================================
 
-This is the formalization associated to the paper [_An unbiased simply typed combinatory logic_](http://www.lix.polytechnique.fr/Labo/Samuel.Mimram/docs/mimram_cccatt.pdf). More precisely, we show the equivalence between
+We show the equivalence between
 
 - our calculus of unbiased combinators and
 - simply typed combinatory logic.
