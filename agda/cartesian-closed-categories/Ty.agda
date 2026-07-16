@@ -3,13 +3,14 @@ open import Prelude
 {-# BUILTIN REWRITE _≡_ #-}
 
 infixr 5 _⇒_
+infixr 6 _×_
 
 -- Types
 data Ty (n : ℕ) : Type where
   X   : Fin n → Ty n
   _⇒_ : (A B : Ty n) → Ty n
-  -- _×_ : (A B : Ty n) → Ty n
-  -- 𝟙   : Ty n
+  _×_ : (A B : Ty n) → Ty n
+  𝟙   : Ty n
 
 -- A substitution on types
 SubTy : ℕ → ℕ → Set
@@ -17,12 +18,16 @@ SubTy n n' = Vec (Ty n) n'
 
 -- Applying a type substitution
 _[_]' : {n : ℕ} {n' : ℕ} → Ty n' → SubTy n n' → Ty n
-X x [ σ ]' = lookup σ x
+X x [ τ ]' = lookup τ x
 (A ⇒ B) [ τ ]' = A [ τ ]' ⇒ B [ τ ]'
+(A × B) [ τ ]' = A [ τ ]' × (B [ τ ]')
+𝟙 [ τ ]' = 𝟙
 
 WkTy : {n : ℕ} → Ty n → Ty (suc n)
 WkTy (X x) = X (suc x)
 WkTy (A ⇒ B) = WkTy A ⇒ WkTy B
+WkTy (A × B) = WkTy A × WkTy B
+WkTy 𝟙 = 𝟙
 
 SubTyWk : {n n' : ℕ} → SubTy n n' → SubTy (suc n) n'
 SubTyWk τ = map WkTy τ
@@ -48,6 +53,8 @@ SubTyIdEq {n} {A = X x} = lookup-id x
   lookup-wk zero = refl
   lookup-wk (suc x) = lookup-map-weaken {σ = SubTyWk (SubTyId _)} x (lookup-id (suc x))
 SubTyIdEq {A = A ⇒ B} = cong₂ _⇒_ SubTyIdEq SubTyIdEq
+SubTyIdEq {A = A × B} = cong₂ _×_ SubTyIdEq SubTyIdEq
+SubTyIdEq {A = 𝟙} = refl
 
 {-# REWRITE SubTyIdEq #-}
 
@@ -76,6 +83,8 @@ SubTyUnitL {n} {suc n'} (A ∷ τ) = cong (A ∷_) (trans (SubTyWk∘' (SubTyId 
   WkTy[]∷ : (B : Ty n') → WkTy B [ A ∷ τ ]' ≡ B [ τ ]'
   WkTy[]∷ (X x) = refl
   WkTy[]∷ (B ⇒ B') = cong₂ _⇒_ (WkTy[]∷ B) (WkTy[]∷ B')
+  WkTy[]∷ (B × B') = cong₂ _×_ (WkTy[]∷ B) (WkTy[]∷ B')
+  WkTy[]∷ 𝟙 = refl
   SubTyWk∘' : {m : ℕ} (σ : SubTy n' m) → SubTyWk σ ∘' (A ∷ τ) ≡ σ ∘' τ
   SubTyWk∘' [] = refl
   SubTyWk∘' (B ∷ σ) = cong₂ _∷_ (WkTy[]∷ B) (SubTyWk∘' σ)
@@ -85,6 +94,8 @@ SubTyUnitL {n} {suc n'} (A ∷ τ) = cong (A ∷_) (trans (SubTyWk∘' (SubTyId 
 [∘'] {A = X zero} {τ' = τ' ∷ _} = refl
 [∘'] {n} {n'} {n''} {A = X (suc x)} {τ} {τ' = A ∷ τ'} = [∘'] {A = X x} {τ = τ} {τ' = τ'}
 [∘'] {A = A ⇒ B} = cong₂ _⇒_ ([∘'] {A = A}) ([∘'] {A = B})
+[∘'] {A = A × B} = cong₂ _×_ ([∘'] {A = A}) ([∘'] {A = B})
+[∘'] {A = 𝟙} = refl
 
 {-# REWRITE [∘'] #-}
 {-# REWRITE SubTyUnitL #-}

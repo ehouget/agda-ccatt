@@ -46,7 +46,7 @@ postulate
 -- Substitutions
 Sub : {n n' : ℕ} (τ : SubTy n n') (Γ : Con n) (Γ' : Con n') → Type
 Sub _ Γ ε = Unit
-Sub τ Γ (Γ' ▹ A) = Sub τ Γ Γ' × Tm Γ (A [ τ ]')
+Sub τ Γ (Γ' ▹ A) = Sub τ Γ Γ' ∧ Tm Γ (A [ τ ]')
 
 -- Terminal substitution
 SubTerm : {n : ℕ} (Γ : Con n) → Sub (SubTyId n) Γ ε
@@ -64,7 +64,7 @@ S [ σ ] = S
 -- Equivalence of substitutions
 _∼Sub_ : {n n' : ℕ} {Γ : Con n} {Γ' : Con n'} {τ : SubTy n n'} (σ σ' : Sub τ Γ Γ') → Type
 _∼Sub_ {Γ' = ε} tt tt = Unit
-_∼Sub_ {Γ' = Γ' ▹ A} (σ , t) (σ' , t') = (σ ∼Sub σ') × (t ∼ t')
+_∼Sub_ {Γ' = Γ' ▹ A} (σ , t) (σ' , t') = (σ ∼Sub σ') ∧ (t ∼ t')
 
 ∼SubRefl : {n n' : ℕ} {Γ : Con n} {Γ' : Con n'} {τ : SubTy n n'} (σ : Sub τ Γ Γ') → σ ∼Sub σ
 ∼SubRefl {Γ' = ε} σ = tt
