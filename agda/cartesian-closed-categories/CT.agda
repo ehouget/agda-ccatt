@@ -9,7 +9,7 @@ data Tm {n : ℕ} (Γ : Con n) : (A : Ty n) → Type
 -- Substitutions for terms
 Sub : {n n' : ℕ} (τ : SubTy n n') (Γ : Con n) (Γ' : Con n') → Type
 Sub τ Γ ε = Unit
-Sub τ Γ (Γ' ▹ A) = Sub τ Γ Γ' × Tm Γ (A [ τ ]')
+Sub τ Γ (Γ' ▹ A) = Sub τ Γ Γ' ∧ Tm Γ (A [ τ ]')
 
 data Tm {n} Γ where
   var : {A : Ty n} → A ∈ Γ → Tm Γ A
@@ -153,7 +153,7 @@ eqs' ps t τ p = eq ps t t τ p
   -- -- basically, if q is (eqv x), we are as above, and if q is eq then we can use the same eq ps for both => NO!
 
 _∼Sub_ {Γ' = ε} σ σ' = Unit
-_∼Sub_ {Γ = Γ} {Γ' = Γ' ▹ A} (σ , t) (σ' , t') = (_∼Sub_ {Γ = Γ} σ σ') × t ∼ t'
+_∼Sub_ {Γ = Γ} {Γ' = Γ' ▹ A} (σ , t) (σ' , t') = (_∼Sub_ {Γ = Γ} σ σ') ∧ t ∼ t'
 
 ∼ap : {n : ℕ} {Γ : Con n} {A B : Ty n} {t t' : Tm Γ (A ⇒ B)} {u u' : Tm Γ A} → t ∼ t' → u ∼ u' → ap t u ∼ ap t' u'
 ∼ap {n} {Γ} {A} {B} p q = eq PSX⇒Y,X⊢Y v v (SubTy2 A B) ((tt , p) , q)
