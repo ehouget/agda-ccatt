@@ -2,20 +2,29 @@
 
 \begin{document}
 
-\paragraph{Title} Formalisation de schémas composables en Agda
+\paragraph{Title} Schémas composables non-biaisé pour les combinateurs catégoriques et combinateurs catégoriques cartésiens.
 
 \paragraph{Keywords} 
 
 \paragraph{Supplementary material}
 
-\paragraph{Abstract} Il n'existe pas de caractérisation simple des types contractiles ; ainsi afin de construire une théorie des types pour les catégories cartésiennes closes de dimension supérieure, S. Mimram propose le concept de schéma composable formant un sous-ensemble des types contractiles. Ce stage avait pour but de formaliser les schémas composables dans le cadre des catégories simples et des catégories cartésiennes, et de montrer l'inclusion de ceux-ci dans l'ensemble des types contractiles. Cette formalisation a été implémentée en Agda.
+\paragraph{Abstract} Nous proposons une adaptation de la notion de schéma composable pour les catégories non biaisées et les catégories cartésiennes. Cela est une première étape pour proposer une variante à la théorie des types $CCaTT\_1$. Nous présentons les combinateurs catégoriques ainsi qu'une relation d'équivalence $\sim$ similaire à l'équivalence extensionnelle pour les $\lambda$-termes. Nous introduisons un nouveau système de réécriture pour définir une forme normalisée des termes. Nous exposons une définition inductive des schémas composables et montrons que ceux-ci sont contractibles à équivalence près. Nous exposons comment adapter les notions précédentes après avoir introduit un produit et un objet terminal. Une partie de ce travail est implémentée en Agda.
+
+
+% OLD ABSTRACT Il n'existe pas de caractérisation simple des types contractiles ; ainsi afin de construire une théorie des types pour les catégories cartésiennes closes de dimension supérieure, S. Mimram propose le concept de schéma composable formant un sous-ensemble des types contractiles. Ce stage avait pour but de formaliser les schémas composables dans le cadre des catégories simples et des catégories cartésiennes, et de montrer l'inclusion de ceux-ci dans l'ensemble des types contractiles. Cette formalisation a été implémentée en Agda.
 
 \section{Introduction}
 	
-\subsection{Théorie des types} La théorie des types est une branche de la logique qui s'attache à formaliser des termes mathématiques typés. Formellement, une théorie des types est un langage formel défini à l'aide d'un ensemble de règles de réécriture. Du point de vue de la logique, les types apparaissent comme des propositions (et les types dépendants comme des prédicats), tandis que les termes sont des preuves de leur type. Un type est dit propositionnel s'il est habité par au plus un terme. Un type est dit contractile s'il est habité par exactement un terme. Les preuves (i.e les termes) d'une théorie des types sont par définition toujours constructives (et construites comme des arbres dont les nœuds sont les règles du système de réécriture). Ainsi, elles peuvent être vérifiées mécaniquement à l'aide d'outils d'assistance de preuve tel qu'Agda, Rocq (anciennement Coq), Lean, etc. Les définitions, propositions et preuves de ce rapports sont formalisées et implémentés en Agda ; ainsi la théorie des types est ici autant un outil qu'un objet d'étude.
+\subsection{Théorie des types} La théorie des types est une branche de la logique qui s'attache à formaliser des termes mathématiques typés. Formellement, une théorie des types est un langage formel défini à l'aide d'un ensemble de règles de réécriture. Du point de vue de la logique, les types apparaissent comme des propositions (et les types dépendants comme des prédicats), tandis que les termes sont des preuves de leur type. Les preuves (i.e les termes) d'une théorie des types sont par définition toujours constructives (et construites comme des arbres dont les nœuds sont les règles du système de réécriture). Ainsi, elles peuvent être vérifiées mécaniquement à l'aide d'outils d'assistance de preuve tel qu'Agda, Rocq (anciennement Coq), Lean, etc. Les définitions, propositions et preuves de ce rapports sont formalisées et implémentés en Agda ; ainsi la théorie des types est ici autant un outil qu'un objet d'étude.
   
-\subsection{Théorie des catégories} La théorie des catégories est un vaste domaine décrivant les structures abstraites des mathématiques. \\
+\paragraph{Théorie des catégories} La théorie des catégories est un vaste domaine décrivant les structures abstraites des mathématiques. Les catégories sont composées d'objets et de flèches entre ces derniers ; l'ajouts d'une notion de produit d'objets et d'un objet terminal définit les catégories cartésiennes.
 
+\paragraph{Motivation} L'objectif à long terme est la construction d'une théorie des types dépendants non biaisée pour les catégories cartésiennes closes de dimension supérieure, dans laquelle la notion d'égalité est remplacée par des témoins d'égalité (de dimension supérieure). Ce but s'inscrit lui-même dans un projet d'ériger des fondations constructivistes des mathématiques.
+
+\paragraph{Plan du papier} Ce rapport se découpe en trois parties. Dans la partie II, nous présenterons brièvement le cadre, les notions et les outils nécessaires à la bonne compréhension de ce travail. Les parties III et IV présentent chacune une construction et une preuve de la bonne définition des schémas composables dans le cas des catégories, d'une part, et dans le cas des catégories cartésiennes, d'autre part.
+
+\section{Cadres, notions, notations et outils}
+	
 \paragraph{Catégories} Une catégorie est la donnée d'une collection $C_0$ d'objets, d'une collection $C_1$ de morphimes (ou flèches) telles que : 
 \begin{itemize}
 	\item pour chaque morphisme $f$ il existe un objet $s(f)$ (appelé source) et un objet $t(f)$ (appelé but);
@@ -31,13 +40,8 @@
 \end{itemize}
 
 \paragraph{Catégories cartésiennes}
-  
-\paragraph{Catégories cartésiennes closes}
-  
-\subsection{Motivation} L'objectif à long terme est la construction d'une théorie des types non-biaisée pour les catégories cartésiennes closes de dimension supérieure dans laquelle la notion d'égalité est remplacée par des témoins d'égalité (de dimension supérieure). Ce but s'inscrit lui-même dans un projet d'ériger des fondations constructivistes des mathématiques.
+	
 
-
-  
 \subsection{$CCCaTT_1$} Pour ce faire, S. Mimram introduit la notion de schéma composable définissant un ensemble (de taille raisonnablement large) de types contractiles. Les termes de la théorie des types $CCCaTT_1$ introduite par S. Mimram sont les uniques habitants de chacun des types auxquels on applique une substitution de type.
   
 \subsection{Schémas composables} Ces schémas composables prennent la forme d'ensembles de flèches entre des types, ces flèches sont telles qu'elles sont composables d'une unique manière. 

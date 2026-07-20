@@ -55,6 +55,8 @@ PS⊢X×Y⇒X = ps-proj zero (right point) (►-left (►-here refl))
 PS⊢X×Y⇒Y : PS {n = 2} ε ((X (# 0) × X (# 1)) , X (# 1))
 PS⊢X×Y⇒Y = ps-proj (suc zero) (right point) (►-right (►-here refl))
 
+------------------------------------------------------------------------
+-- Other examples of cartesian pasting scheme
 
 PSA⇒B,A⇒D,B⇒C,D⇒E⊢A⇒C×E : PS {n = 5} (ε ▹ (X (# 4) , X (# 3)) ▹ (X (# 3) , X (# 2)) ▹ (X (# 4) , X (# 1)) ▹ (X (# 1) , X (# 0))) (X (# 4) , X (# 2) × X (# 0))
 PSA⇒B,A⇒D,B⇒C,D⇒E⊢A⇒C×E = ps-pair (ps-weak (ps-weak (ps-ext (ps-ext (ps-proj zero point (►-here refl)))))) (ps-ext (ps-ext (ps-weak (ps-weak (ps-proj zero point (►-here refl))))))
