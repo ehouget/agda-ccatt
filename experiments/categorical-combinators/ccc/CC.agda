@@ -1,6 +1,5 @@
---- Categorical combinators for cartesian categories
+--- Categorical combinators for cartesian closed categories
 --- See for instance https://www.irif.fr/~curien/CIRM-2014.pdf
---- (we might add closure someday)
 
 open import Prelude
 open import Ty
@@ -15,6 +14,8 @@ data Tm {n : ℕ} (Γ : Con n) : Arr n → Type where
   pair : {X A B : Ty n} → Tm Γ (X , A) → Tm Γ (X , B) → Tm Γ (X , A × B)
   fst  : {A B : Ty n} → Tm Γ (A × B , A)
   snd  : {A B : Ty n} → Tm Γ (A × B , B)
+  curry : {A B C : Ty n} → Tm Γ (A × B , C) → Tm Γ (A , B ⇒ C)
+  uncurry : {A B C : Ty n} → Tm Γ (A , B ⇒ C) → Tm Γ (A × B , C)
 
 infix 5 _∼_
 
@@ -59,6 +60,8 @@ term [ σ ] = term
 pair f g [ σ ] = pair (f [ σ ]) (g [ σ ])
 fst [ σ ] = fst
 snd [ σ ] = snd
+curry t [ σ ] = {!!}
+uncurry t [ σ ] = {!!}
 
 -- Equivalence of substitutions
 _∼Sub_ : {n n' : ℕ} {Γ : Con n} {Γ' : Con n'} {τ : SubTy n n'} (σ σ' : Sub τ Γ Γ') → Type
@@ -95,6 +98,8 @@ assoc f g h [ q ]∼ = ∼trans (assoc (f [ _ ]) (g [ _ ]) (h [ _ ])) (∼· (�
   lem (pair f g) p = ∼pair (∼refl {f = f} [ p ]∼) (∼refl {f = g} [ p ]∼)
   lem fst p = ∼refl
   lem snd p = ∼refl
+  lem (curry t) = {!!}
+  lem (uncurry t) = {!!}
 ∼sym p [ q ]∼ = ∼sym (p [ ∼SubSym q ]∼)
 ∼trans p p' [ q ]∼ = ∼trans (p [ q ]∼) (p' [ ∼SubRefl _ ]∼)
 
@@ -113,3 +118,5 @@ _∘_ {Γ'' = Γ'' ▹ A} (σ' , t') σ = (σ' ∘ σ) , (t' [ σ ])
 [∘] (pair f g) σ' σ = cong₂ pair ([∘] f σ' σ) ([∘] g σ' σ)
 [∘] fst σ' σ = refl
 [∘] snd σ' σ = refl
+[∘] (curry t) σ' σ = {!!}
+[∘] (uncurry t) σ' σ = {!!}
