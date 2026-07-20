@@ -27,6 +27,9 @@ data _∼_ {n : ℕ} {Γ : Con n} : {A : Arr n} → Tm Γ A → Tm Γ A → Type
   -- pext : {X A B : Ty n} (f : Tm Γ (X , A × B)) → pair (f · fst) (f · snd) ∼ f
   pext : {A B : Ty n} → pair fst snd ∼ id {A = A × B}
   text : {A : Ty n} (f : Tm Γ (A , 𝟙)) → f ∼ term
+  eβ : {A B C : Ty n} (f : Tm Γ (A × B , C)) → uncurry (curry f) ∼ f
+  eext : {A B C : Ty n} (f : Tm Γ (A , B ⇒ C)) → curry (uncurry f) ∼ f
+  enat : {A' A B C : Ty n} (f : Tm Γ (A' , A)) (g : Tm Γ (A , B ⇒ C)) → uncurry (f · g) ∼ pair (fst · f) snd · uncurry g
   unitl : {A B : Ty n} (f : Tm Γ (A , B)) → id · f ∼ f
   unitr : {A B : Ty n} (f : Tm Γ (A , B)) → f · id ∼ f
   assoc : {A B C D : Ty n} (f : Tm Γ (A , B)) (g : Tm Γ (B , C)) (h : Tm Γ (C , D)) → (f · g) · h ∼ f · (g · h)
@@ -98,6 +101,9 @@ psnd f g [ q ]∼ = ∼trans (psnd (f [ _ ]) (g [ _ ])) ([]∼ g q)
 pnat f g h [ q ]∼ = ∼trans (pnat (f [ _ ]) (g [ _ ]) (h [ _ ])) (∼pair (∼· ([]∼ f q) ([]∼ g q)) (∼· ([]∼ f q) ([]∼ h q)))
 pext [ q ]∼ = pext
 text f [ q ]∼ = text (f [ _ ])
+eβ f [ q ]∼ = ∼trans (eβ (f [ _ ])) ([]∼ f q)
+eext f [ q ]∼ = ∼trans (eext (f [ _ ])) ([]∼ f q)
+enat f g [ q ]∼ = ∼trans (enat (f [ _ ]) (g [ _ ])) (∼· (∼pair (∼· ∼refl ([]∼ f q)) ∼refl) (∼uncurry ([]∼ g q)))
 unitl f [ q ]∼ = ∼trans (unitl (f [ _ ])) ([]∼ f q)
 unitr f [ q ]∼ = ∼trans (unitr (f [ _ ])) ([]∼ f q)
 assoc f g h [ q ]∼ = ∼trans (assoc (f [ _ ]) (g [ _ ]) (h [ _ ])) (∼· ([]∼ f q) (∼· ([]∼ g q) ([]∼ h q)))
