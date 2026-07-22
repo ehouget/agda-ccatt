@@ -91,7 +91,7 @@ mutual
   WkNormTm⁻¹-injective-in-PS : {n : ℕ} {Γ : Con n} {A B : Ty n} {k : Fin n}
                              → (ps : PS (WkCon Γ ▹ (WkTy B , X (# 0))) (WkTy A , X (suc k)))
                              → (f g : NormTm (WkCon Γ ▹ (WkTy B , X (# 0))) (WkTy A , X (suc k)))
-                             → WkNormTm⁻¹ f ≡ WkNormTm⁻¹ g → f ≡ g
+                             → WkNormTm⁻¹ f ≡ WkNormTm⁻¹ {!!} → f ≡ g
   WkNormTm⁻¹-injective-in-PS {n} {Γ} {A} {B} {k} ps f g eq = lem-WkNormTm⁻¹-injective-in-PS refl refl refl refl ps f g refl refl
     where
     lem-WkNormTm⁻¹-injective-in-PS : {Γ' : Con (suc n)} {A' B' C' : Ty (suc n)}
@@ -104,7 +104,7 @@ mutual
                                    → (eqf : f ≡ f')
                                    → (eqg : g ≡ g')
                                    → f' ≡ g'
-    lem-WkNormTm⁻¹-injective-in-PS eqA eqB eqC eqΓ (ps-weak ps') (norm-proj x) (norm-proj y) refl refl = cong norm-proj (Wk►⁻¹-injective (norm-proj-injective eq))
+    lem-WkNormTm⁻¹-injective-in-PS eqA eqB eqC eqΓ (ps-weak ps') (norm-proj x) (norm-proj y) refl refl = {!!} -- cong norm-proj (Wk►⁻¹-injective (norm-proj-injective eq))
     lem-WkNormTm⁻¹-injective-in-PS eqA eqB eqC eqΓ (ps-weak ps') _ (norm-comp g' (∈-here refl) (►-here ())) _ _
     lem-WkNormTm⁻¹-injective-in-PS eqA eqB eqC eqΓ (ps-weak ps') (norm-comp f' (∈-here refl) (►-here ())) _ _ _
     lem-WkNormTm⁻¹-injective-in-PS eqA eqB eqC eqΓ (ps-weak ps') (norm-proj x) (norm-comp {C = C} g' l y) refl refl = lem-lem-WkNormTm⁻¹-injective-in-PS (ps-con-tgt-are-simple ps l) y refl
@@ -173,7 +173,7 @@ mutual
                                  → (f g : NormTm (WkCon Γ ▹ (WkTy C , X (# 0))) (WkTy A , WkTy B))
                                  → WkNormTm⁻¹-aux f ≡ WkNormTm⁻¹-aux g → f ≡ g
   WkNormTm⁻¹-aux-injective-in-PS {B = 𝟙} ps norm-term norm-term x = refl
-  WkNormTm⁻¹-aux-injective-in-PS {B = X _} ps (norm-proj x) (norm-proj y) eq = cong norm-proj (Wk►⁻¹-injective (norm-proj-injective eq))
+  WkNormTm⁻¹-aux-injective-in-PS {B = X _} ps (norm-proj x) (norm-proj y) eq = {!!} -- cong norm-proj (Wk►⁻¹-injective (norm-proj-injective eq))
   WkNormTm⁻¹-aux-injective-in-PS {B = X i} ps (norm-proj x) (norm-comp {C = C} g l y) eq = lem-lem-WkNormTm⁻¹-injective-in-PS (ps-con-tgt-are-simple (ps-weak ps) l) y refl
     where
     lem-lem-WkNormTm⁻¹-injective-in-PS : (∃[ m ] (C ≡ X m)) → (y' : C ► suc i) → (eqy : y' ≡ y) → (norm-proj x) ≡ (norm-comp {C = C} g l y)
@@ -182,7 +182,7 @@ mutual
     where
     lem-lem-WkNormTm⁻¹-injective-in-PS : (∃[ m ] (C ≡ X m)) → (x' : C ► suc i) → (eqx : x' ≡ x) → (norm-comp {C = C} f k x) ≡ (norm-proj y)
     lem-lem-WkNormTm⁻¹-injective-in-PS (.(suc i) , refl) (►-here refl) eqy = contradiction (y , k) (producer-unicity {ps = ps-weak ps})
-  WkNormTm⁻¹-aux-injective-in-PS {B = X _} ps (norm-comp f k x) (norm-comp g l y) eq = WkNormTm⁻¹-injective-in-PS (ps-weak ps) (norm-comp f k x) (norm-comp g l y) eq
+  WkNormTm⁻¹-aux-injective-in-PS {B = X _} ps (norm-comp f k x) (norm-comp g l y) eq = {!!} -- WkNormTm⁻¹-injective-in-PS (ps-weak ps) (norm-comp f k x) (norm-comp g l y) eq
   WkNormTm⁻¹-aux-injective-in-PS {B = _ × _} (ps-pair ps ps') (norm-pair f f') (norm-pair g g') eq = cong₂ norm-pair (WkNormTm⁻¹-aux-injective-in-PS ps f g (norm-pair-injectiveˡ eq))
                                                                                                                      (WkNormTm⁻¹-aux-injective-in-PS ps' f' g' (norm-pair-injectiveʳ eq))
 
@@ -233,7 +233,7 @@ extNormTm⁻¹-injective-in-PS {n} {Γ} {A} {B} ps f g eq = lem-extNormTm⁻¹-i
                                         → (ps'' : PS Γ' (A' , B'))
                                         → (eqps' : ps'' ≡ ps')
                                         → f ≡ g
-    lem-lem-extNormTm⁻¹-injective-in-PS (.(# 0) , refl) (►-here refl) refl (.(# 0) , refl) (►-here refl) refl (∈-here refl) refl (∈-here refl) refl f'' g'' eqf' eqg' (X x) refl refl refl refl _ _ = cong (λ h → norm-comp h (∈-here refl) (►-here refl)) (WkNormTm⁻¹-injective-in-PS (ps-weak ps') f' g' eq)
+    lem-lem-extNormTm⁻¹-injective-in-PS (.(# 0) , refl) (►-here refl) refl (.(# 0) , refl) (►-here refl) refl (∈-here refl) refl (∈-here refl) refl f'' g'' eqf' eqg' (X x) refl refl refl refl _ _ =  {!!} -- cong (λ h → norm-comp h (∈-here refl) (►-here refl)) (WkNormTm⁻¹-injective-in-PS (ps-weak ps') f' g' eq)
     lem-lem-extNormTm⁻¹-injective-in-PS (.(# 0) , refl) (►-here refl) refl (.(# 0) , refl) (►-here refl) refl (∈-here refl) refl (∈-here refl) refl norm-term norm-term refl refl 𝟙 refl _ _ _ _ _ = refl
     lem-lem-extNormTm⁻¹-injective-in-PS (.(# 0) , refl) (►-here refl) refl (.(# 0) , refl) (►-here refl) refl (∈-here refl) refl (∈-here refl) refl (norm-pair f'' f''') (norm-pair g'' g''') refl refl (B'' × B''') refl refl refl refl (ps-pair ps'' ps''') refl = cong₂ (λ h h' → norm-comp (norm-pair h h') (∈-here refl) (►-here refl)) (WkNormTm⁻¹-aux-injective-in-PS ps'' f'' g'' (norm-pair-injectiveˡ eq)) (WkNormTm⁻¹-aux-injective-in-PS ps''' f''' g''' (norm-pair-injectiveʳ eq))
     lem-lem-extNormTm⁻¹-injective-in-PS (.(# 0) , refl) (►-here refl) refl (.(# 0) , refl) (►-here refl) refl (∈-here x) eqk (∈-drop l') eql _ _ _ _ _ _ _ _ _ = contradiction l' no-0-in-WkCon
@@ -296,7 +296,7 @@ lem-PSEq (ps-const ps) (norm-comp (norm-pair f f₁) (∈-here ()) x₁) (norm-c
 lem-PSEq (ps-pair ps₁ ps₂) (norm-pair f f') (norm-pair g g') = cong₂ norm-pair (lem-PSEq ps₁ f g) (lem-PSEq ps₂ f' g')
 
 -- ps-weak
-lem-PSEq (ps-weak ps) f g = WkNormTm⁻¹-injective-in-PS (ps-weak ps) f g (lem-PSEq ps (WkNormTm⁻¹ f) (WkNormTm⁻¹ g))
+lem-PSEq (ps-weak ps) f g = {!!} -- WkNormTm⁻¹-injective-in-PS (ps-weak ps) f g (lem-PSEq ps (WkNormTm⁻¹ f) (WkNormTm⁻¹ g))
 
 --------------------------------------------------------------------------------
 -- Main theoreme

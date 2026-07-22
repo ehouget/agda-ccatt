@@ -63,19 +63,20 @@ mutual
   WkNormTm-aux norm-term = norm-term
   WkNormTm-aux (norm-pair f f') = norm-pair (WkNormTm-aux f) (WkNormTm-aux f')
 
-WkNormTm⁻¹ : {n : ℕ} {Γ : Con n} {A B : Ty n} {m : Fin n} (f : NormTm (WkCon Γ ▹ (WkTy B , X (# 0))) (WkTy A , X (suc m))) → ∃[ F ] (f ≡ WkNormTm F)
-WkNormTm⁻¹ (norm-proj x) = norm-proj (Wk►⁻¹ x) , refl
-WkNormTm⁻¹ (norm-comp f (∈-here refl) (►-here ()))
-WkNormTm⁻¹ (norm-comp {B = B} {C = C} f (∈-drop k) x) = WkNormTm⁻¹-lem (∈WkCon→∃Wk∈WkCon k)
-  where
-  WkNormTm⁻¹-lem : ∃[ A' ] ((B , C) ≡ WkArr A') → ∃[ F ] (norm-comp {B = B} {C = C} f (∈-drop k) x ≡ WkNormTm F)
-  WkNormTm⁻¹-lem ((B' , C') , refl) = norm-comp {!!} (Wk∈⁻¹ k) (Wk►⁻¹ x) , {!!}
+mutual
+  WkNormTm⁻¹ : {n : ℕ} {Γ : Con n} {A B : Ty n} {m : Fin n} (f : NormTm (WkCon Γ ▹ (WkTy B , X (# 0))) (WkTy A , X (suc m))) → ∃[ F ] (f ≡ WkNormTm F)
+  WkNormTm⁻¹ (norm-proj x) = norm-proj (Wk►⁻¹ x) , refl
+  WkNormTm⁻¹ (norm-comp f (∈-here refl) (►-here ()))
+  WkNormTm⁻¹ (norm-comp {B = B} {C = C} f (∈-drop k) x) = WkNormTm⁻¹-lem (∈WkCon→∃Wk∈WkCon k)
+    where
+    WkNormTm⁻¹-lem : ∃[ A' ] ((B , C) ≡ WkArr A') → ∃[ F ] (norm-comp {B = B} {C = C} f (∈-drop k) x ≡ WkNormTm F)
+    WkNormTm⁻¹-lem ((B' , C') , refl) = norm-comp {!!} (Wk∈⁻¹ k) (Wk►⁻¹ x) , {!!}
 
-  -- WkNormTm⁻¹-aux : {n : ℕ} {Γ : Con n} {A B C : Ty n} (f : NormTm (WkCon Γ ▹ (WkTy C , X (# 0))) (WkTy A , WkTy B)) → NormTm Γ (A , B)
-  -- WkNormTm⁻¹-aux {B = X m} (norm-proj x) = WkNormTm⁻¹ {B = X m} (norm-proj x)
-  -- WkNormTm⁻¹-aux {B = X _} (norm-comp f k x) = WkNormTm⁻¹ (norm-comp f k x)
-  -- WkNormTm⁻¹-aux {B = 𝟙} norm-term = norm-term
-  -- WkNormTm⁻¹-aux {B = _ × _} (norm-pair f f') = norm-pair (WkNormTm⁻¹-aux f) (WkNormTm⁻¹-aux f')
+  WkNormTm⁻¹-aux : {n : ℕ} {Γ : Con n} {A B C : Ty n} (f : NormTm (WkCon Γ ▹ (WkTy C , X (# 0))) (WkTy A , WkTy B)) → NormTm Γ (A , B)
+  WkNormTm⁻¹-aux {B = X m} (norm-proj x) = {!!} -- WkNormTm⁻¹ {B = X m} (norm-proj x)
+  WkNormTm⁻¹-aux {B = X _} (norm-comp f k x) = {!!} -- WkNormTm⁻¹ (norm-comp f k x)
+  WkNormTm⁻¹-aux {B = 𝟙} norm-term = norm-term
+  WkNormTm⁻¹-aux {B = _ × _} (norm-pair f f') = norm-pair (WkNormTm⁻¹-aux f) (WkNormTm⁻¹-aux f')
 
 
 --   WkNormTm⁻¹ (norm-proj x) = norm-proj (Wk►⁻¹ x)
@@ -101,25 +102,24 @@ WkNormTm⁻¹ (norm-comp {B = B} {C = C} f (∈-drop k) x) = WkNormTm⁻¹-lem (
 -- ------------------------------------------------------------------------
 -- -- Normal Terms extension
 
--- extNormTm : {n : ℕ} {Γ : Con n} {A B : Ty n} (f : NormTm Γ (A , B)) → NormTm (WkCon Γ ▹ (WkTy B , X (# 0))) (WkTy A , X (# 0))
--- extNormTm (norm-proj x) = norm-comp (WkNormTm (norm-proj x)) (∈-here refl) (►-here refl)
--- extNormTm (norm-comp f k x) = norm-comp (WkNormTm (norm-comp f k x)) (∈-here refl) (►-here refl)
--- extNormTm norm-term = norm-comp norm-term (∈-here refl) (►-here refl)
--- extNormTm (norm-pair f f') = norm-comp (norm-pair (WkNormTm-aux f) (WkNormTm-aux f')) (∈-here refl) (►-here refl)
+extNormTm : {n : ℕ} {Γ : Con n} {A B : Ty n} (f : NormTm Γ (A , B)) → NormTm (WkCon Γ ▹ (WkTy B , X (# 0))) (WkTy A , X (# 0))
+extNormTm (norm-proj x) = norm-comp (WkNormTm (norm-proj x)) (∈-here refl) (►-here refl)
+extNormTm (norm-comp f k x) = norm-comp (WkNormTm (norm-comp f k x)) (∈-here refl) (►-here refl)
+extNormTm norm-term = norm-comp norm-term (∈-here refl) (►-here refl)
+extNormTm (norm-pair f f') = norm-comp (norm-pair (WkNormTm-aux f) (WkNormTm-aux f')) (∈-here refl) (►-here refl)
 
--- extNormTm⁻¹ : {n : ℕ} {Γ : Con n} {A B : Ty n} (f : NormTm (WkCon Γ ▹ (WkTy B , X (# 0))) (WkTy A , X (# 0))) → NormTm Γ (A , B)
--- extNormTm⁻¹ {n} {Γ} {A} {B} (norm-proj x) = contradiction x no-0-in-WkTy
--- extNormTm⁻¹ {n} {Γ} {A} {X x} (norm-comp f (∈-here refl) (►-here refl)) = WkNormTm⁻¹ f
--- extNormTm⁻¹ {n} {Γ} {A} {𝟙} (norm-comp f (∈-here refl) (►-here refl)) = norm-term
--- extNormTm⁻¹ {n} {Γ} {A} {B × B₁} (norm-comp (norm-pair f f') (∈-here refl) (►-here refl)) = norm-pair (WkNormTm⁻¹-aux f) (WkNormTm⁻¹-aux f')
--- extNormTm⁻¹ {n} {Γ} {A} {B} (norm-comp f (∈-drop k) x) = contradiction (k , x) no-0-producer-in-WkCon
+extNormTm⁻¹ : {n : ℕ} {Γ : Con n} {A B : Ty n} (f : NormTm (WkCon Γ ▹ (WkTy B , X (# 0))) (WkTy A , X (# 0))) → NormTm Γ (A , B)
+extNormTm⁻¹ {n} {Γ} {A} {B} (norm-proj x) = contradiction x no-0-in-WkTy
+extNormTm⁻¹ {n} {Γ} {A} {X x} (norm-comp f (∈-here refl) (►-here refl)) = {!!} -- WkNormTm⁻¹ f
+extNormTm⁻¹ {n} {Γ} {A} {𝟙} (norm-comp f (∈-here refl) (►-here refl)) = norm-term
+extNormTm⁻¹ {n} {Γ} {A} {B × B₁} (norm-comp (norm-pair f f') (∈-here refl) (►-here refl)) = norm-pair (WkNormTm⁻¹-aux f) (WkNormTm⁻¹-aux f')
+extNormTm⁻¹ {n} {Γ} {A} {B} (norm-comp f (∈-drop k) x) = contradiction (k , x) no-0-producer-in-WkCon
 
 ------------------------------------------------------------------------
 -- Normal Terms merging
 
 merge-NormTm : {n : ℕ} {Γ : Con n} {A B C : Ty n} → NormTm Γ (A , B) → NormTm Γ (B , C) → NormTm Γ (A , C)
-merge-NormTm (norm-proj x) (norm-proj (►-here refl)) = norm-proj x
-merge-NormTm (norm-comp f k x) (norm-proj (►-here refl)) = norm-comp f k x
+merge-NormTm f (norm-proj (►-here refl)) = f
 merge-NormTm (norm-pair f g) (norm-proj (►-left x)) = merge-NormTm f (norm-proj x)
 merge-NormTm (norm-pair f g) (norm-proj (►-right x)) = merge-NormTm g (norm-proj x)
 merge-NormTm f (norm-comp g k x) = norm-comp (merge-NormTm f g) k x
