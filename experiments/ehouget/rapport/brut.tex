@@ -57,7 +57,7 @@ Dans une catégorie cartésienne $\mathcal{C}$, pour toute paire d'objet $A$ et 
 
 \begin{center}
 \begin{tikzcd}
-	& X \arrow[d, "\left<f\, g\right>"] \arrow[rd, "g"] \arrow[ld, "f"]\\
+	& X \arrow[d, "\left<f{,} g\right>"] \arrow[rd, "g"] \arrow[ld, "f"]\\
 	A
 	& A \times B \arrow[r, "\pi_1"] \arrow[l, "\pi_0"]
 	& B
@@ -520,7 +520,6 @@ $\mathrm{Aff}_d$ est se définie de manière similaire.
 
 \paragraph{Séquents}
 \begin{addmargin}{-\dimeval{\marginparwidth+\marginparsep}}
-\begin{enumerate}
 \item
 \begin{prooftree}
 	\infer0[ax]{\emptyset \vdash_{ps} x \rightarrow x}
@@ -538,7 +537,6 @@ $\mathrm{Aff}_d$ est se définie de manière similaire.
 	\infer1[(ext)]{x \rightarrow y \vdash_{ps} x \rightarrow y}
 	\infer1[(ext)]{x \rightarrow y, y \rightarrow z \vdash_{ps} x \rightarrow z}
 \end{prooftree}
-
 
 \item
 \begin{prooftree}
@@ -595,7 +593,6 @@ $\mathrm{Aff}_d$ est se définie de manière similaire.
 	\infer3[$(ps^=)$]{\Gamma \vdash (f \cdot g) \cdot h = f \cdot (g \cdot h)}
 \end{prooftree}
 avec $\Gamma = f : x \rightarrow y, g : y \rightarrow z, h : z \rightarrow w$
-\end{enumerate}
 \end{addmargin}
 
 
