@@ -55,7 +55,7 @@ Théorie des types, théorie des catégories, réécriture
 
 \section{Cadres, notions, notations et outils}
 
-\subsection{Catégories} Une catégorie est la donnée d'une collection $\mathcal{C}_0$ d'objets, d'une collection $\mathcal{C}_1$ de morphimes (ou flèches) telles que : 
+\subsection{Catégories} Une catégorie est la donnée d'une collection $\mathcal{C}_0$ d'objets, d'une collection $\mathcal{C}_1$ de morphismes (ou flèches) telles que : 
 \begin{itemize}
 	\item pour chaque morphisme $f$ il existe un objet $s(f)$ (appelé source) et un objet $t(f)$ (appelé but);
 	\item pour chaque paire de morphismes $f$ et $g$ tels que $t(f) = s(g)$ il existe un morphisme $g \cdot f$ (appelé composé de $f$ et $g$);
@@ -81,7 +81,7 @@ Dans une catégorie cartésienne $\mathcal{C}$, pour toute paire d'objets $A$ et
 	\end{tikzcd}
 \end{center}
 
-Ainsi les quatres propriétés suivantes sont vérifiées :
+Ainsi les quatre propriétés suivantes sont vérifiées :
 \begin{itemize}
 	\item $\pi_0 \circ \left<f, g\right> = f$;
 	\item $\pi_1 \circ \left<f, g\right> = g$;
@@ -97,7 +97,7 @@ Ainsi les quatres propriétés suivantes sont vérifiées :
 
 On suppose fixée une petite catégorie $\mathcal{C}$.
 
-\subsection{Types} Les objets $\mathcal{C}_0  = \left\{x, y, \dots\right\}$ défini un ensemble de variables de type. Une \textbf{flèche} est un couple de variables de types, notée $x \rightarrow y$, avec $x$ la \textbf{source} et $y$ la \textbf{cible}. Ainsi tout morphisme $f$ de $\mathcal{C}_1$ est typé en notant $f : s(f) \rightarrow t(f)$.
+\subsection{Types} L'ensemble des objets $\mathcal{C}_0  = \left\{x, y, \dots\right\}$ définit un ensemble de variables de type. Une \textbf{flèche} est un couple de variables de types, notée $x \rightarrow y$, avec $x$ la \textbf{source} et $y$ la \textbf{cible}. Ainsi tout morphisme $f$ de $\mathcal{C}_1$ est typé en notant $f : s(f) \rightarrow t(f)$.
 
 \subsection{Contextes} Les contextes prennent la forme de listes de flèches définies inductivement par : $$ \Gamma ::= \epsilon \ \text{(contexte vide)} \ |\ \Gamma , f : x \rightarrow y$$
 On notera $f : A \in \Gamma$ pour signifier que $f : A$ est une flèche apparaissant au moins une fois dans le contexte $\Gamma$. On note $Con$ l'ensemble des contextes. De plus, on note $t(\Gamma)$ l'ensemble des cibles des flèches de $\Gamma$.
@@ -164,7 +164,7 @@ Par les règles $\sim$-refl, $\sim$-sym et $\sim$-trans, $\sim$ est une relation
 \subsection{Termes normaux}
 
 On souhaite normaliser les arbres de dérivation des termes en les transformant en des peignes. Ces termes normalisés ont pour but d'être des représentants canoniques pour les classes d'équivalence de la relation $\sim$. 
-On introduit un systeme d'écriture composé de 2 règles engendrant les termes normalisés. Ce système de réécriture doit apparaître comme un intermédiaire entre le système très souple qui défini les termes, et le système de réécriture linéaire qui définira les schémas composables.
+On introduit un systeme d'écriture composé de 2 règles engendrant les termes normalisés. Ce système de réécriture doit apparaître comme un intermédiaire entre le système très souple qui définit les termes, et le système de réécriture linéaire qui définira les schémas composables.
 \begin{center}
 	\begin{prooftree}
 		\infer0[norm-id]{\Gamma \vdash_{Norm} id_x : x \rightarrow x}
@@ -517,10 +517,7 @@ Comme nous l'avons fait dans la partie II, on introduit un système d'écriture 
 \end{gathered}
 \end{align}
 
-$\mathrm{Aff}_d$ est se définie de manière similaire.
-
-\paragraph{Composition de termes normals} Il s'agit de l'étape crucial 
-
+$\mathrm{Aff}_d$ est définie de manière similaire.
 
 \paragraph{Normalisation} On construit une fonction de normalisation N qui à un terme associe un terme normal en modifant inductivement la preuve : 
 \begin{align}
@@ -548,7 +545,7 @@ $\mathrm{Aff}_d$ est se définie de manière similaire.
 
 \begin{thebibliography}{00}
 \bibitem{b1} Samuel Mimram, ``An unbiased simply typed combinatory logic,'' LIX, CNRS, École polytechnique, Institut Polytechnique de Paris, Palaiseau, France, 2026
-\bibitem{b2} Dominique Boucher, ``La Theorie des catégories en informatique :
+\bibitem{b2} Dominique Boucher, ``La Théorie des catégories en informatique :
 notions de base et application,'' Département d'informatique et recherche opérationnelle
 Faculté des études supérieures, Université de Montréal, Août 1993
 \bibitem{b3} Alexander Grothendieck, Section 4 of: Techniques de construction et théorèmes d’existence en géométrie algébrique III: préschémas quotients, Séminaire Bourbaki: années 1960/61, exposés 205-222, Séminaire Bourbaki, no. 6 (1961), Exposé no. 212
