@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026/Arch Linux) (preloaded format=pdflatex 2026.6.7)  23 JUL 2026 15:45
+This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026/Arch Linux) (preloaded format=pdflatex 2026.6.7)  23 JUL 2026 15:59
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -987,47 +987,47 @@ Underfull \hbox (badness 1365) in paragraph at lines 554--555
  []
 
 
-Overfull \hbox (43.99425pt too wide) in paragraph at lines 589--591
+Overfull \hbox (43.99425pt too wide) in paragraph at lines 588--590
 [][]
  []
 
 
-Overfull \hbox (22.45781pt too wide) detected at line 602
+Overfull \hbox (22.45781pt too wide) detected at line 601
 []
  []
 
 
-Overfull \hbox (37.33434pt too wide) in paragraph at lines 612--614
+Overfull \hbox (37.33434pt too wide) in paragraph at lines 611--613
 [][]
  []
 
 
-Overfull \hbox (27.4756pt too wide) detected at line 625
+Overfull \hbox (27.4756pt too wide) detected at line 624
 []
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 633--637
+Underfull \hbox (badness 10000) in paragraph at lines 632--636
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 648--649
+Underfull \hbox (badness 10000) in paragraph at lines 647--648
 
  []
 
 
-Overfull \hbox (62.08351pt too wide) detected at line 664
+Overfull \hbox (62.08351pt too wide) detected at line 663
 []
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 664--665
+Underfull \hbox (badness 10000) in paragraph at lines 663--664
 
  []
 
 
-Overfull \hbox (71.50566pt too wide) detected at line 680
+Overfull \hbox (71.50566pt too wide) detected at line 679
 []
  []
 
@@ -1054,14 +1054,14 @@ Package rerunfilecheck Warning: File `rapport.out' has changed.
 (rerunfilecheck)                or use package `bookmark'.
 
 Package rerunfilecheck Info: Checksums for `rapport.out':
-(rerunfilecheck)             Before: D7891A39B8B8A4F3FAFB6EFAD1695DAE;4039
-(rerunfilecheck)             After:  A8B0F92353D6C02235DC84CA425BA1FB;4093.
+(rerunfilecheck)             Before: A8B0F92353D6C02235DC84CA425BA1FB;4093
+(rerunfilecheck)             After:  E52916205077C1BB79007B410268FCC4;4088.
  ) 
 Here is how much of TeX's memory you used:
- 24738 strings out of 469486
- 465429 string characters out of 5469659
+ 24739 strings out of 469486
+ 465438 string characters out of 5469659
  890026 words of memory out of 5000000
- 52887 multiletter control sequences out of 15000+600000
+ 52888 multiletter control sequences out of 15000+600000
  664487 words of font info for 113 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
  84i,17n,97p,1118b,980s stack positions out of 10000i,1000n,20000p,200000b,200000s
@@ -1079,7 +1079,7 @@ pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy9.pfb></usr/share
 st/fonts/type1/urw/times/utmb8a.pfb></usr/share/texmf-dist/fonts/type1/urw/time
 s/utmbi8a.pfb></usr/share/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/sha
 re/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on rapport.pdf (5 pages, 207551 bytes).
+Output written on rapport.pdf (5 pages, 207725 bytes).
 PDF statistics:
  284 PDF objects out of 1000 (max. 8388607)
  241 compressed objects within 3 object streams

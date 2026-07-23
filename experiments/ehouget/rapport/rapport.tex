@@ -69,8 +69,8 @@ Théorie des types, théorie des catégories, réécriture
 	\end{itemize}
 \end{itemize}
 
-\subsection{Catégories cartésiennes} Une catégorie $\mathcal{C}$ est dite cartésienne, si elle est munit d'un objet terminal $\mathbbm 1$ et si pour toute paire d'objets $A$ et $B$, il existe un produit $A \times B$ dans $\mathcal C$.
-Dans une catégorie cartésienne $\mathcal{C}$, pour toute paire d'objet $A$ et $B$, il existe deux morphismes de projection : $$\pi_0 : A \times B \rightarrow A$$ et $$\pi_1 : A \times B \rightarrow A$$. De plus, pour toute paire de morphisme $f$ et $g$ telle que $s(f) = s(g)$, il existe un unique morphisme $\left<f, g\right>$ tel que le diagramme suivant commute :
+\subsection{Catégories cartésiennes} Une catégorie $\mathcal{C}$ est dite cartésienne, si elle est munie d'un objet terminal $\mathbbm 1$ et si pour toute paire d'objets $A$ et $B$, il existe un produit $A \times B$ dans $\mathcal C$.
+Dans une catégorie cartésienne $\mathcal{C}$, pour toute paire d'objets $A$ et $B$, il existe deux morphismes de projection : $$\pi_0 : A \times B \rightarrow A$$ et $$\pi_1 : A \times B \rightarrow A$$. De plus, pour toute paire de morphisme $f$ et $g$ telle que $s(f) = s(g)$, il existe un unique morphisme $\left<f, g\right>$ tel que le diagramme suivant commute :
 
 \begin{center}
 	\begin{tikzcd}
@@ -91,7 +91,7 @@ Ainsi les quatres propriétés suivantes sont vérifiées :
 
 \subsection{Combinateurs catégoriques typés} Une théorie des types catégoriques est une théorie des types dont les termes sont les morphismes d'une catégorie $\mathcal{C}$ typés par leur source et leur cible (appartenant à $\mathcal{C}_0$).
 
-\subsection{Schémas composables} Ces schémas composables prennent la forme d'ensembles de flèches entre des types, ces flèches sont telles qu'elles sont composables d'une unique manière. 
+\subsection{Schémas composables} Ces schémas composables prennent la forme d'ensembles de flèches entre des types, ces flèches sont telles qu'elles sont composables d'une manière unique. 
 
 \section{Pasting scheme dans des catégories simples}
 
@@ -103,7 +103,7 @@ On suppose fixée une petite catégorie $\mathcal{C}$.
 On notera $f : A \in \Gamma$ pour signifier que $f : A$ est une flèche apparaissant au moins une fois dans le contexte $\Gamma$. On note $Con$ l'ensemble des contextes. De plus, on note $t(\Gamma)$ l'ensemble des cibles des flèches de $\Gamma$.
 
 
-\subsection{Termes} Un terme typé est un morphisme $f$ typé par une flèche $A$ et construit dans un contexte $\Gamma$. On défini inductivement le séquent $\Gamma \vdash f : x \rightarrow y$ par les règles suivantes :
+\subsection{Termes} Un terme typé est un morphisme $f$ typé par une flèche $A$ et construit dans un contexte $\Gamma$. On définit inductivement le séquent $\Gamma \vdash f : x \rightarrow y$ par les règles suivantes :
 \begin{center}
 	\begin{prooftree}
 		\hypo[]{f : A \in \Gamma}
@@ -123,7 +123,7 @@ On notera $f : A \in \Gamma$ pour signifier que $f : A$ est une flèche apparais
 On note $Tm(\Gamma, A)$ l'ensemble des termes de contexte $\Gamma$ et de flèche $A$.
 
 \subsection{Relation $\sim$}
-On définit la relation $\sim\ \subset Tm(\Gamma, A)$ qui identifie les termes égaux relativement aux quatres axiomes de la définition d'une catégorie présentée dans la partie II. 
+On définit la relation $\sim\ \subset Tm(\Gamma, A)$ qui identifie les termes égaux relativement aux quatre axiomes de la définition d'une catégorie présentée dans la partie II. 
 \begin{center}
 	\begin{prooftree}
 		\infer0[(unitl)]{f \cdot id \sim f}
@@ -164,7 +164,7 @@ Par les règles $\sim$-refl, $\sim$-sym et $\sim$-trans, $\sim$ est une relation
 \subsection{Termes normaux}
 
 On souhaite normaliser les arbres de dérivation des termes en les transformant en des peignes. Ces termes normalisés ont pour but d'être des représentants canoniques pour les classes d'équivalence de la relation $\sim$. 
-On introduit un systeme d'écriture composé de 2 règles engendrant les termes normalisés. Ce système de réécriture doit apparaitre comme un intermédiaire entre le système très souple qui défini les termes, et le système de réécriture linéaire qui définira les schémas composables.
+On introduit un systeme d'écriture composé de 2 règles engendrant les termes normalisés. Ce système de réécriture doit apparaître comme un intermédiaire entre le système très souple qui défini les termes, et le système de réécriture linéaire qui définira les schémas composables.
 \begin{center}
 	\begin{prooftree}
 		\infer0[norm-id]{\Gamma \vdash_{Norm} id_x : x \rightarrow x}
@@ -337,7 +337,7 @@ On peut donc dériver les séquents suivants, indispensables dans la constructio
 
 \section{Pasting scheme dans des catégories cartésiennes}
 Nous n'avons pas pu conclure la preuve formelle implémentée en Agda, nous présentons ici les grandes idées de la preuve telle qu'envisagée. Nous détaillons les objets introduits ainsi que la défintion de schéma composable proposée. Nous expliquerons ce qui manque pour conclure.
-Nous enrichissons la définition des types en ajoutant les deux règles suivante :
+Nous enrichissons la définition des types en ajoutant les deux règles suivantes :
 \begin{center}
 	\begin{prooftree}
 		\infer0[$({\mathbbm 1}_I)$]{\mathbbm 1 \in Ty}
@@ -418,8 +418,8 @@ De même, nous enrichissons la relation d'équivalence $\sim$ afin d'identifier 
 	\end{prooftree}
 \end{center}
 
-\subsection{Termes normales}
-Comme nous l'avons fait dans la partie II, on introduit un systeme d'écriture engendrant des termes normalisés. Ces termes normalisés ont pour but d'être des représentants canoniques pour les classes d'équivalence de la relation $\sim$.
+\subsection{Termes normaux}
+Comme nous l'avons fait dans la partie II, on introduit un système d'écriture engendrant des termes normalisés. Ces termes normalisés ont pour but d'être des représentants canoniques pour les classes d'équivalence de la relation $\sim$.
 
 \begin{center}
 	\begin{prooftree}
